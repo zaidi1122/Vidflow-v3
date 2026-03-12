@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidFlow Pro — YouTube Growth Platform</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070D;--bg2:#0E0E17;--surf:#111120;--surf2:#181828;
+  --red:#FF3251;--violet:#7C3AED;--cyan:#06B6D4;
+  --green:#10B981;--yellow:#F59E0B;
+  --text:#F0EEFF;--t2:#9896B8;--t3:#55537A;
+  --border:rgba(255,255,255,0.07);
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--violet);border-radius:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes orb1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(70px,-60px) scale(1.1)}}
+@keyframes orb2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-90px,70px) scale(1.15)}}
+@keyframes orb3{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,80px)}}
+@keyframes glowBtn{0%,100%{box-shadow:0 0 20px rgba(255,50,81,.35)}50%{box-shadow:0 0 50px rgba(255,50,81,.65),0 0 90px rgba(124,58,237,.3)}}
+@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+.hidden{display:none!important}
+.syne{font-family:'Syne',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.grad{background:linear-gradient(135deg,#FF3251,#A855F7,#2563EB);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s linear infinite}
+.spinner{width:22px;height:22px;border:2.5px solid rgba(255,255,255,.1);border-top-color:var(--violet);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 24px;border-radius:12px;font-weight:600;font-size:14px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .22s}
+.btn-primary{background:var(--red);color:#fff;animation:glowBtn 3s infinite}
+.btn-primary:hover{background:#e8203d;transform:translateY(-1px) scale(1.02)}
+.btn-violet{background:var(--violet);color:#fff}
+.btn-violet:hover{background:#6d28d9;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.2);color:var(--text);background:rgba(255,255,255,.04)}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#059669}
+.btn-white{background:#fff;color:#1a1a2e;font-weight:700}
+.btn-white:hover{background:#f0efff;transform:translateY(-1px)}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:8px}
+.btn-lg{padding:15px 36px;font-size:16px;border-radius:14px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;animation:none}
+
+/* INPUTS */
+.inp{background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:11px 15px;color:var(--text);font-size:14px;width:100%;transition:border-color .2s;font-family:'DM Sans',sans-serif}
+.inp:focus{border-color:rgba(124,58,237,.5);outline:none}
+.inp::placeholder{color:var(--t3)}
+.tarea{background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:12px 15px;color:var(--text);font-size:13px;width:100%;resize:vertical;min-height:90px;line-height:1.6;font-family:'DM Sans',sans-serif;transition:border-color .2s}
+.tarea:focus{border-color:rgba(124,58,237,.5);outline:none}
+select.inp{cursor:pointer}
+
+.card{background:var(--surf);border:1px solid var(--border);border-radius:16px}
+.card-p{padding:20px}
+
+.alert{padding:12px 16px;border-radius:10px;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:9px;margin-bottom:12px}
+.alert-info{background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.25);color:#93C5FD}
+.alert-warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#FCD34D}
+.alert-success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#6EE7B7}
+.alert-error{background:rgba(255,50,81,.1);border:1px solid rgba(255,50,81,.25);color:#FCA5A5}
+
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;font-size:12px;font-weight:600;margin:2px}
+.chip-v{background:rgba(124,58,237,.12);color:#A78BFA;border:1px solid rgba(124,58,237,.2)}
+.chip-g{background:rgba(16,185,129,.1);color:#34D399;border:1px solid rgba(16,185,129,.2)}
+.chip-r{background:rgba(255,50,81,.1);color:#FF8096;border:1px solid rgba(255,50,81,.2)}
+.chip-y{background:rgba(245,158,11,.1);color:#FCD34D;border:1px solid rgba(245,158,11,.2)}
+
+/* TOASTS */
+#toast-wrap{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-size:13px;display:flex;align-items:center;gap:10px;min-width:260px;animation:slideIn .3s ease;box-shadow:0 20px 60px rgba(0,0,0,.6);pointer-events:all}
+
+/* LOADING */
+#loading-overlay{position:fixed;inset:0;background:rgba(7,7,13,.95);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9998}
+#loading-overlay.show{display:flex}
+
+/* ═══════════════════════════════════════
+   SCREEN 1 — LANDING / LOGIN
+═══════════════════════════════════════ */
+#screen-landing{position:fixed;inset:0;overflow-y:auto;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);opacity:.28;pointer-events:none;z-index:0}
+
+.landing-box{background:var(--surf);border:1px solid var(--border);border-radius:28px;padding:0;max-width:480px;width:100%;position:relative;z-index:1;overflow:hidden;animation:popIn .5s ease}
+.landing-top{padding:40px 40px 32px;text-align:center;background:linear-gradient(180deg,rgba(124,58,237,.08),transparent)}
+.brand-badge{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:50px;padding:8px 18px;margin-bottom:24px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--red),var(--violet));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;flex-shrink:0}
+.landing-title{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:12px}
+.landing-sub{color:var(--t2);font-size:15px;line-height:1.65;margin-bottom:28px}
+
+/* GOOGLE SIGN IN BUTTON (custom) */
+.google-btn{display:flex;align-items:center;gap:14px;background:#fff;color:#1f1f1f;border:none;border-radius:12px;padding:14px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;width:100%;transition:all .22s;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.google-btn:hover{background:#f8f7ff;box-shadow:0 4px 20px rgba(0,0,0,.35);transform:translateY(-1px)}
+.google-btn svg{flex-shrink:0}
+.google-btn-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--t3);font-size:12px}
+.google-btn-divider::before,.google-btn-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ACCOUNTS LIST */
+.accounts-section{padding:0 24px 24px}
+.accounts-label{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;margin-top:4px}
+.account-card{display:flex;align-items:center;gap:14px;padding:13px 16px;background:var(--surf2);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:all .22s;margin-bottom:8px;position:relative;overflow:hidden}
+.account-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(124,58,237,.08),transparent);opacity:0;transition:opacity .2s}
+.account-card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-1px);box-shadow:0 8px 25px rgba(0,0,0,.3)}
+.account-card:hover::before{opacity:1}
+.account-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid transparent;transition:border-color .2s}
+.account-card:hover .account-avatar{border-color:var(--violet)}
+.account-avatar-ph{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;border:2px solid transparent}
+.acc-name{font-size:14px;font-weight:600;color:var(--text)}
+.acc-email{font-size:12px;color:var(--t3);margin-top:1px}
+.acc-arrow{margin-left:auto;color:var(--t3);transition:transform .2s}
+.account-card:hover .acc-arrow{transform:translateX(3px);color:var(--violet)}
+.add-account-btn{display:flex;align-items:center;gap:12px;padding:11px 16px;background:transparent;border:1px dashed rgba(255,255,255,.1);border-radius:12px;cursor:pointer;transition:all .22s;margin-bottom:0;width:100%;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t2)}
+.add-account-btn:hover{border-color:rgba(124,58,237,.4);color:var(--text);background:rgba(124,58,237,.06)}
+
+.first-time-section{padding:0 24px 28px}
+.first-time-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t3);cursor:pointer;margin-bottom:14px;transition:color .2s}
+.first-time-toggle:hover{color:var(--t2)}
+.first-time-fields{animation:fadeUp .3s ease}
+.cid-label{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+
+/* ═══════════════════════════════════════
+   SCREEN 2 — CHANNEL SELECT
+═══════════════════════════════════════ */
+#screen-channels{position:fixed;inset:0;overflow-y:auto;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.channels-box{background:var(--surf);border:1px solid var(--border);border-radius:28px;max-width:520px;width:100%;position:relative;z-index:1;overflow:hidden;animation:popIn .45s ease}
+.channels-head{padding:32px 36px 24px;background:linear-gradient(180deg,rgba(16,185,129,.06),transparent);text-align:center;border-bottom:1px solid var(--border)}
+.user-info-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;padding:12px 20px;background:rgba(255,255,255,.04);border-radius:50px;border:1px solid var(--border);display:inline-flex}
+.channels-list{padding:24px 28px 28px}
+.channel-card{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--surf2);border:2px solid var(--border);border-radius:16px;cursor:pointer;transition:all .25s;margin-bottom:12px;position:relative;overflow:hidden}
+.channel-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,50,81,.06),rgba(124,58,237,.06));opacity:0;transition:opacity .25s}
+.channel-card:hover{border-color:rgba(124,58,237,.45);transform:translateY(-2px);box-shadow:0 12px 35px rgba(0,0,0,.4)}
+.channel-card:hover::before{opacity:1}
+.channel-thumb{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--violet);flex-shrink:0}
+.channel-thumb-ph{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;flex-shrink:0;border:2px solid var(--violet)}
+.ch-info-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.ch-info-stats{display:flex;gap:12px}
+.ch-stat{font-size:12px;color:var(--t2);font-family:'JetBrains Mono',monospace}
+.ch-connect-badge{margin-left:auto;background:linear-gradient(135deg,var(--red),var(--violet));color:#fff;border-radius:50px;padding:6px 16px;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+
+/* ═══════════════════════════════════════
+   DASHBOARD (same as before, clean)
+═══════════════════════════════════════ */
+#screen-dashboard{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:row;overflow:hidden}
+
+#sidebar{width:232px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-logo{padding:18px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.sb-ch{padding:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.ch-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--violet);flex-shrink:0}
+.ch-avatar-ph{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+.ch-name{font-size:13px;font-weight:600;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-sub{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:2px}
+.sb-nav{padding:6px;flex:1}
+.sb-sec{padding:8px 12px 3px;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-top:6px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:500;color:var(--t3);cursor:pointer;transition:all .2s;border:1px solid transparent;margin-bottom:2px}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--t2)}
+.sb-item.active{background:rgba(124,58,237,.13);color:var(--text);border-color:rgba(124,58,237,.25)}
+.sb-foot{padding:10px;border-top:1px solid var(--border)}
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.mini-stat{background:var(--surf2);border-radius:8px;padding:8px 10px;text-align:center}
+.ms-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
+.ms-lbl{font-size:10px;color:var(--t3);margin-top:1px}
+
+/* SWITCH ACCOUNT BUTTON in sidebar */
+.switch-acc-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:transparent;border:1px solid var(--border);font-size:12px;color:var(--t3);cursor:pointer;width:100%;margin-bottom:8px;font-family:'DM Sans',sans-serif;transition:all .2s}
+.switch-acc-btn:hover{border-color:rgba(255,255,255,.2);color:var(--t2);background:rgba(255,255,255,.04)}
+
+#main-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.pg-head{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(14,14,23,.85);backdrop-filter:blur(20px);flex-shrink:0;min-height:60px}
+.pg-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.pg-body{flex:1;overflow-y:auto}
+
+/* VIDEOS */
+.videos-layout{display:grid;grid-template-columns:1fr 345px;height:calc(100vh - 60px);overflow:hidden}
+.vid-list{overflow-y:auto;padding:18px}
+.vid-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.vid-card{background:var(--surf);border:1px solid var(--border);border-radius:13px;overflow:hidden;cursor:pointer;transition:all .22s}
+.vid-card:hover{border-color:rgba(124,58,237,.35);transform:translateY(-2px);box-shadow:0 10px 35px rgba(0,0,0,.4)}
+.vid-card.sel{border-color:var(--violet);box-shadow:0 0 0 2px rgba(124,58,237,.25)}
+.vid-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--surf2)}
+.vid-thumb-ph{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,var(--surf2),var(--bg));display:flex;align-items:center;justify-content:center;font-size:34px}
+.vid-info{padding:11px}
+.vid-title{font-size:12px;font-weight:600;line-height:1.35;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vid-stats{display:flex;gap:10px}
+.vs{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.vs b{color:var(--t2)}
+.vid-date{font-size:10px;color:var(--t3);margin-top:5px}
+.analyzed-badge{font-size:10px;background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2);border-radius:4px;padding:1px 5px;margin-left:4px}
+.no-thumb-badge{font-size:10px;background:rgba(245,158,11,.1);color:var(--yellow);border:1px solid rgba(245,158,11,.2);border-radius:4px;padding:1px 5px;margin-left:4px}
+
+/* STUDIO */
+#studio-panel{background:var(--bg2);border-left:1px solid var(--border);overflow-y:auto}
+.stu-tabs{display:flex;border-bottom:1px solid var(--border)}
+.stu-tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;cursor:pointer;transition:all .2s;color:var(--t3);border-bottom:2px solid transparent;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.stu-tab.active{color:var(--text);border-bottom-color:var(--violet)}
+.stu-body{padding:14px}
+.stu-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px}
+.stu-stat{background:var(--surf2);border-radius:8px;padding:8px;text-align:center;border:1px solid var(--border)}
+.stu-stat-v{font-family:'Syne',sans-serif;font-size:17px;font-weight:800}
+.stu-stat-l{font-size:10px;color:var(--t3);margin-top:1px;text-transform:uppercase;letter-spacing:.3px}
+.ai-item{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--t2);line-height:1.5}
+.ai-item:last-child{border-bottom:none}
+.ai-num{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.prog-bar{height:5px;background:var(--surf2);border-radius:50px;overflow:hidden;margin-top:5px}
+.prog-fill{height:100%;border-radius:50px;transition:width 1s ease}
+.prompt-box{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:14px;font-size:12px;line-height:1.7;color:var(--t2);white-space:pre-wrap;max-height:340px;overflow-y:auto}
+
+/* OUTLIERS */
+.out-card{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;transition:border-color .2s}
+.out-card:hover{border-color:rgba(124,58,237,.3)}
+
+/* THUMB STUDIO */
+.thumb-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:22px}
+.thumb-list{display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 130px);overflow-y:auto}
+.thumb-vid-row{display:flex;gap:9px;padding:9px;border-radius:10px;border:1px solid var(--border);cursor:pointer;transition:all .2s;align-items:center;background:var(--surf)}
+.thumb-vid-row:hover,.thumb-vid-row.sel{border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06)}
+.thumb-mini{width:64px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;background:var(--surf2)}
+.thumb-mini-ph{width:64px;height:36px;border-radius:6px;background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+
+/* PROMPT GEN */
+.pg-layout{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - 60px);overflow:hidden}
+.pg-left{border-right:1px solid var(--border);overflow-y:auto;padding:16px}
+.pg-right{overflow-y:auto;padding:22px}
+.pg-vid-row{padding:9px;border-radius:10px;border:1px solid var(--border);cursor:pointer;transition:all .2s;background:var(--surf);margin-bottom:6px}
+.pg-vid-row:hover,.pg-vid-row.sel{border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06)}
+.type-pill{padding:6px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid var(--border);background:var(--surf);color:var(--t3);white-space:nowrap}
+.type-pill.active{background:var(--violet);color:#fff;border-color:var(--violet)}
+
+/* EMPTY */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 24px;color:var(--t3);text-align:center}
+.empty-icon{font-size:44px;margin-bottom:12px}
+.empty-title{font-size:15px;font-weight:600;color:var(--t2);margin-bottom:5px}
+.empty-sub{font-size:13px}
+
+/* COLOR PICKERS */
+.color-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.color-row{display:flex;gap:5px;align-items:center}
+input[type=color]{width:30px;height:30px;border:none;border-radius:6px;cursor:pointer;padding:2px;background:var(--surf2)}
+
+@media(max-width:900px){.videos-layout{grid-template-columns:1fr}#studio-panel{display:none}.pg-layout{grid-template-columns:1fr}.pg-left{display:none}}
+@media(max-width:640px){#sidebar{display:none}.vid-grid{grid-template-columns:1fr 1fr}.thumb-layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- DECORATIVE ORBS -->
+<div class="orb" style="width:550px;height:550px;background:radial-gradient(circle,#FF3251,transparent);top:-120px;left:-120px;animation:orb1 12s ease-in-out infinite"></div>
+<div class="orb" style="width:650px;height:650px;background:radial-gradient(circle,#7C3AED,transparent);bottom:-160px;right:-160px;animation:orb2 16s ease-in-out infinite"></div>
+<div class="orb" style="width:400px;height:400px;background:radial-gradient(circle,#06B6D4,transparent);top:50%;left:50%;transform:translate(-50%,-50%);animation:orb3 10s ease-in-out infinite"></div>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div style="width:48px;height:48px;background:linear-gradient(135deg,var(--red),var(--violet));border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff">V</div>
+  <div class="spinner" style="width:34px;height:34px;border-width:3px"></div>
+  <div id="loading-msg" style="color:var(--t2);font-size:14px">Loading...</div>
+</div>
+
+<!-- ═══════════ SCREEN 1 — LANDING ═══════════ -->
+<div id="screen-landing">
+  <div class="landing-box">
+    <div class="landing-top">
+      <div class="brand-badge">
+        <div class="logo-icon">V</div>
+        <span class="syne" style="font-size:17px;font-weight:800">VidFlow Pro</span>
+        <span style="background:rgba(255,50,81,.15);color:#FF8096;border:1px solid rgba(255,50,81,.2);border-radius:50px;padding:2px 9px;font-size:11px;font-weight:700;margin-left:2px">BETA</span>
+      </div>
+      <h1 class="landing-title">
+        Grow on YouTube<br><span class="grad">Faster with AI</span>
+      </h1>
+      <p class="landing-sub">Analyze your videos, fix what's broken,<br>and make every upload go viral.</p>
+
+      <!-- GOOGLE SIGN IN BUTTON -->
+      <button class="google-btn" onclick="initiateGoogleLogin()" id="main-google-btn">
+        <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-3.59-13.43-8.83l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        <span>Continue with Google</span>
+      </button>
+    </div>
+
+    <!-- DETECTED ACCOUNTS SECTION -->
+    <div id="accounts-section" class="accounts-section hidden">
+      <div class="accounts-label">👋 Logged in accounts on this device</div>
+      <div id="accounts-list"></div>
+      <button class="add-account-btn" onclick="addNewAccount()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Use a different account
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN 2 — CHANNEL SELECT ═══════════ -->
+<div id="screen-channels" class="hidden">
+  <div class="channels-box">
+    <div class="channels-head">
+      <div id="user-info-row" style="display:inline-flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:50px;padding:10px 20px;margin-bottom:20px">
+        <img id="user-avatar" style="width:32px;height:32px;border-radius:50%;display:none" alt="">
+        <div id="user-avatar-ph" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px"></div>
+        <div style="text-align:left">
+          <div id="user-display-name" style="font-size:13px;font-weight:600"></div>
+          <div id="user-email" style="font-size:11px;color:var(--t3)"></div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="syne" style="font-size:24px;font-weight:800;margin-bottom:8px">Connect Your YouTube Channel</h2>
+      <p style="color:var(--t2);font-size:14px;line-height:1.6">Select the channel you want to optimize:</p>
+    </div>
+    <div class="channels-list">
+      <div id="channels-loading" style="text-align:center;padding:30px;color:var(--t2);display:flex;align-items:center;justify-content:center;gap:10px">
+        <div class="spinner"></div> Finding your YouTube channels...
+      </div>
+      <div id="channels-list-items" class="hidden"></div>
+      <div id="channels-empty" class="hidden">
+        <div class="alert alert-warn">⚠️ <div>No YouTube channels found for this account. Make sure your account has a YouTube channel, or <button class="btn btn-ghost btn-sm" onclick="backToLanding()" style="margin-left:4px">try a different account</button></div></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:4px" onclick="backToLanding()">← Use a different account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN 3 — DASHBOARD ═══════════ -->
+<div id="screen-dashboard" class="hidden">
+  <div id="sidebar">
+    <div class="sb-logo">
+      <div class="logo-icon">V</div>
+      <span class="syne" style="font-size:16px;font-weight:800">VidFlow Pro</span>
+    </div>
+    <div class="sb-ch">
+      <img class="ch-avatar" id="sb-ch-img" style="display:none" alt="">
+      <div class="ch-avatar-ph" id="sb-ch-ph">C</div>
+      <div style="flex:1;min-width:0">
+        <div class="ch-name" id="sb-ch-name">Channel</div>
+        <div class="ch-sub" id="sb-ch-sub">—</div>
+      </div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Analyze</div>
+      <div class="sb-item active" onclick="switchTab('videos')" id="tab-videos">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M10 8l6 4-6 4V8z"/></svg>
+        My Videos
+      </div>
+      <div class="sb-item" onclick="switchTab('outliers')" id="tab-outliers">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Outlier Analysis
+      </div>
+      <div class="sb-item" onclick="switchTab('thumbnail')" id="tab-thumbnail">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Thumbnail Studio
+      </div>
+      <div class="sb-item" onclick="switchTab('prompts')" id="tab-prompts">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Clone Prompts
+      </div>
+      <div class="sb-sec" style="margin-top:10px">Account</div>
+      <div class="sb-item" onclick="refreshVideos()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Refresh Videos
+      </div>
+    </div>
+    <div class="sb-foot">
+      <div class="mini-stats">
+        <div class="mini-stat"><div class="ms-val" id="ms-views">—</div><div class="ms-lbl">Views</div></div>
+        <div class="mini-stat"><div class="ms-val" id="ms-likes">—</div><div class="ms-lbl">Likes</div></div>
+      </div>
+      <button class="switch-acc-btn" onclick="switchAccount()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Switch Account
+      </button>
+      <button class="btn btn-ghost btn-sm" style="width:100%;font-size:12px" onclick="logout()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </div>
+  <div id="main-content">
+    <div class="pg-head">
+      <div class="pg-title" id="pg-title">🎬 My Videos</div>
+      <div id="pg-actions"></div>
+    </div>
+    <div class="pg-body" id="pg-body"></div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-wrap"></div>
+<canvas id="thumb-canvas" style="display:none"></canvas>
+
+<script>
+/* ════════════════════════════════
+   ⚙️  AAPKO SIRF YEH 2 CHEEZEIN FILL KARNI HAIN
+   (Users ko kuch nahi karna padega)
+════════════════════════════════ */
+const GOOGLE_CLIENT_ID = 'APNA_GOOGLE_CLIENT_ID_YAHAN_LIKHO.apps.googleusercontent.com';
+const GEMINI_API_KEY   = 'APNI_GEMINI_API_KEY_YAHAN_LIKHO';
+// Gemini FREE hai: https://aistudio.google.com/app/apikey
+// Google Client ID FREE hai: https://console.cloud.google.com
+
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+const S={
+  clientId: GOOGLE_CLIENT_ID, token:null,
+  userInfo:null, channel:null, videos:[],
+  selectedVideo:null, analysisCache:{},
+  currentTab:'videos', studioTab:'analysis'
+};
+
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+const $=id=>document.getElementById(id);
+const qs=(s,c=document)=>c.querySelector(s);
+const qsa=(s,c=document)=>[...c.querySelectorAll(s)];
+const fmtNum=n=>{n=parseInt(n)||0;if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return n.toString()};
+const fmtDate=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+const escH=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function toast(msg,type='info'){
+  const w=$('toast-wrap'),d=document.createElement('div');
+  d.className='toast';
+  const icons={info:'ℹ️',success:'✅',error:'❌',warn:'⚠️'};
+  d.innerHTML=`<span>${icons[type]}</span><span style="color:var(--text);font-size:13px">${msg}</span>`;
+  w.appendChild(d);setTimeout(()=>d.remove(),4500);
+}
+
+function showLoading(msg){$('loading-overlay').classList.add('show');$('loading-msg').textContent=msg||'Loading...';}
+function hideLoading(){$('loading-overlay').classList.remove('show');}
+
+function showScreen(name){
+  ['screen-landing','screen-channels','screen-dashboard'].forEach(s=>{
+    $(s).classList.toggle('hidden',s!=='screen-'+name);
+  });
+}
+
+/* ════════════════════════════════
+   INIT
+════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+
+  // Check OAuth callback
+  const hash=new URLSearchParams(location.hash.slice(1));
+  const tok=hash.get('access_token');
+  if(tok){
+    history.replaceState(null,'',location.pathname);
+    sessionStorage.setItem('vf_tok',tok);
+    S.token=tok;
+    afterAuth();
+    return;
+  }
+
+  // Restore session
+  const saved=sessionStorage.getItem('vf_tok');
+  if(saved){
+    S.token=saved;
+    afterAuth();
+    return;
+  }
+
+  // Show landing — detect any stored accounts
+  showScreen('landing');
+  tryShowSavedAccounts();
+});
+
+/* ════════════════════════════════
+   SAVED ACCOUNTS
+════════════════════════════════ */
+function tryShowSavedAccounts(){
+  const stored=JSON.parse(localStorage.getItem('vf_accounts')||'[]');
+  if(!stored.length) return;
+  const sec=$('accounts-section'),list=$('accounts-list');
+  sec.classList.remove('hidden');
+  list.innerHTML=stored.map((acc,i)=>`
+    <div class="account-card" onclick="loginWithAccount(${i})">
+      ${acc.picture?`<img class="account-avatar" src="${acc.picture}" alt="">`:
+        `<div class="account-avatar-ph" style="background:linear-gradient(135deg,${acc.color||'var(--red)'},${acc.color2||'var(--violet)'})">${acc.name?.[0]||'?'}</div>`}
+      <div><div class="acc-name">${escH(acc.name||'')}</div><div class="acc-email">${escH(acc.email||'')}</div></div>
+      <svg class="acc-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`).join('');
+}
+function loginWithAccount(idx){
+  const stored=JSON.parse(localStorage.getItem('vf_accounts')||'[]');
+  const acc=stored[idx];if(!acc) return;
+  const redir=encodeURIComponent(location.href.split('#')[0].split('?')[0]);
+  const scope=encodeURIComponent('https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.upload');
+  location.href=`https://accounts.google.com/o/oauth2/auth?client_id=${encodeURIComponent(S.clientId)}&redirect_uri=${redir}&response_type=token&scope=${scope}&login_hint=${encodeURIComponent(acc.email||'')}&prompt=none`;
+}
+function addNewAccount(){ initiateGoogleLogin(); }
+
+/* ════════════════════════════════
+   OAUTH
+════════════════════════════════ */
+function initiateGoogleLogin(){
+  const redir=encodeURIComponent(location.href.split('#')[0].split('?')[0]);
+  const scope=encodeURIComponent('https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.upload');
+  location.href=`https://accounts.google.com/o/oauth2/auth?client_id=${encodeURIComponent(S.clientId)}&redirect_uri=${redir}&response_type=token&scope=${scope}&prompt=select_account`;
+}
+
+function switchAccount(){
+  sessionStorage.removeItem('vf_tok');
+  S.token=null; S.channel=null; S.videos=[];
+  initiateGoogleLogin();
+}
+
+function backToLanding(){
+  showScreen('landing');
+  tryShowSavedAccounts();
+}
+
+function logout(){
+  sessionStorage.removeItem('vf_tok');
+  S.token=null; S.channel=null; S.videos=[]; S.userInfo=null;
+  showScreen('landing');
+  tryShowSavedAccounts();
+}
+
+/* ════════════════════════════════
+   POST-AUTH FLOW
+════════════════════════════════ */
+async function afterAuth(){
+  showLoading('Signing you in...');
+  try {
+    // Get user info
+    const ur=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',
+      {headers:{Authorization:`Bearer ${S.token}`}});
+    if(!ur.ok) throw new Error('Could not get user info');
+    S.userInfo=await ur.json();
+
+    // Save account for future quick-login
+    saveAccount(S.userInfo);
+
+    // Fetch all channels
+    hideLoading();
+    showScreen('channels');
+    loadChannels();
+  } catch(e){
+    hideLoading();
+    sessionStorage.removeItem('vf_tok');
+    S.token=null;
+    toast('Login failed: '+e.message,'error');
+    showScreen('landing');
+    tryShowSavedAccounts();
+  }
+}
+
+function saveAccount(u){
+  const accounts=JSON.parse(localStorage.getItem('vf_accounts')||'[]');
+  const existing=accounts.findIndex(a=>a.email===u.email);
+  const colors=[['#FF3251','#7C3AED'],['#06B6D4','#2563EB'],['#10B981','#06B6D4'],['#F59E0B','#FF3251'],['#A855F7','#06B6D4']];
+  const ci=accounts.length%colors.length;
+  const acc={name:u.name,email:u.email,picture:u.picture,color:colors[ci][0],color2:colors[ci][1],savedAt:Date.now()};
+  if(existing>=0) accounts.splice(existing,1);
+  accounts.unshift(acc);
+  localStorage.setItem('vf_accounts',JSON.stringify(accounts.slice(0,5)));
+}
+
+/* ════════════════════════════════
+   CHANNEL SELECTION
+════════════════════════════════ */
+async function loadChannels(){
+  const u=S.userInfo;
+  // Show user info in header
+  if(u?.picture){
+    $('user-avatar').src=u.picture;
+    $('user-avatar').style.display='block';
+    $('user-avatar-ph').style.display='none';
+  } else {
+    $('user-avatar-ph').textContent=u?.name?.[0]||'?';
+  }
+  $('user-display-name').textContent=u?.name||'';
+  $('user-email').textContent=u?.email||'';
+
+  try {
+    const d=await ytGet('/channels?part=snippet,statistics&mine=true&maxResults=50');
+    const items=d.items||[];
+    $('channels-loading').classList.add('hidden');
+
+    if(!items.length){
+      $('channels-empty').classList.remove('hidden');
+      return;
+    }
+
+    const list=$('channels-list-items');
+    list.classList.remove('hidden');
+    list.innerHTML=items.map(ch=>{
+      const sn=ch.snippet,st=ch.statistics;
+      const th=sn.thumbnails?.medium?.url||sn.thumbnails?.default?.url;
+      return `<div class="channel-card" onclick="selectChannel('${ch.id}')">
+        ${th?`<img class="channel-thumb" src="${th}" alt="">`:`<div class="channel-thumb-ph" style="background:linear-gradient(135deg,var(--red),var(--violet))">${sn.title?.[0]||'C'}</div>`}
+        <div style="flex:1;min-width:0">
+          <div class="ch-info-name">${escH(sn.title||'')}</div>
+          <div class="ch-info-stats">
+            <span class="ch-stat">👥 ${fmtNum(st.subscriberCount)} subs</span>
+            <span class="ch-stat">🎬 ${fmtNum(st.videoCount)} videos</span>
+            <span class="ch-stat">👁 ${fmtNum(st.viewCount)} views</span>
+          </div>
+          ${sn.description?`<div style="font-size:11px;color:var(--t3);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(sn.description.substring(0,60))}${sn.description.length>60?'…':''}</div>`:''}
+        </div>
+        <div class="ch-connect-badge">Connect →</div>
+      </div>`;
+    }).join('');
+  } catch(e){
+    $('channels-loading').classList.add('hidden');
+    $('channels-list-items').classList.remove('hidden');
+    $('channels-list-items').innerHTML=`<div class="alert alert-error">❌ ${e.message}</div>`;
+  }
+}
+
+async function selectChannel(channelId){
+  showLoading('Connecting channel...');
+  try {
+    const d=await ytGet(`/channels?part=snippet,statistics&id=${channelId}`);
+    S.channel=d.items?.[0];
+    if(!S.channel) throw new Error('Channel not found');
+    showLoading(`Loading videos for "${S.channel.snippet.title}"...`);
+    await loadVideos();
+    renderDashboard();
+    hideLoading();
+    showScreen('dashboard');
+    toast(`✅ Connected! ${S.videos.length} videos loaded.`,'success');
+  } catch(e){
+    hideLoading();
+    toast('Error: '+e.message,'error');
+  }
+}
+
+/* ════════════════════════════════
+   YOUTUBE API
+════════════════════════════════ */
+async function ytGet(path){
+  const r=await fetch(`https://www.googleapis.com/youtube/v3${path}`,
+    {headers:{Authorization:`Bearer ${S.token}`}});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'YouTube API error '+r.status);}
+  return r.json();
+}
+
+async function loadVideos(){
+  let ids=[],pt='';
+  for(let p=0;p<3;p++){
+    const ptp=pt?`&pageToken=${pt}`:'';
+    const d=await ytGet(`/search?part=id&channelId=${S.channel.id}&type=video&maxResults=50&order=date${ptp}`);
+    ids.push(...(d.items||[]).map(x=>x.id.videoId).filter(Boolean));
+    if(!d.nextPageToken) break;
+    pt=d.nextPageToken;
+  }
+  if(!ids.length){S.videos=[];return;}
+  const chunks=[];for(let i=0;i<ids.length;i+=50)chunks.push(ids.slice(i,i+50));
+  S.videos=[];
+  for(const c of chunks){
+    const d=await ytGet(`/videos?part=snippet,statistics,contentDetails&id=${c.join(',')}`);
+    S.videos.push(...(d.items||[]));
+  }
+}
+
+async function refreshVideos(){
+  if(!S.token||!S.channel) return;
+  toast('Refreshing...','info');
+  try{
+    showLoading('Refreshing videos...');
+    await loadVideos();
+    hideLoading();
+    renderCurrentTab();
+    toast(`${S.videos.length} videos loaded.`,'success');
+  }catch(e){hideLoading();toast('Error: '+e.message,'error');}
+}
+
+async function updateVideoMeta(videoId,snippet){
+  const r=await fetch('https://www.googleapis.com/youtube/v3/videos?part=snippet',{
+    method:'PUT',
+    headers:{Authorization:`Bearer ${S.token}`,'Content-Type':'application/json'},
+    body:JSON.stringify({id:videoId,snippet})
+  });
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'Update failed');}
+  return r.json();
+}
+
+async function uploadThumb(videoId,blob){
+  const r=await fetch(`https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${videoId}&uploadType=media`,{
+    method:'POST',
+    headers:{Authorization:`Bearer ${S.token}`,'Content-Type':'image/jpeg'},
+    body:blob
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Thumb upload failed');}
+  return r.json();
+}
+
+/* ════════════════════════════════
+   GEMINI AI API (FREE)
+════════════════════════════════ */
+async function callClaude(prompt,maxTok=1800){
+  // Gemini 1.5 Flash - bilkul FREE hai!
+  const r=await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+    {method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTok,temperature:0.7}})}
+  );
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Gemini API error '+r.status);}
+  const d=await r.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+
+async function analyzeVideoAI(video){
+  const v=video.snippet,s=video.statistics;
+  const raw=await callClaude(`You are a YouTube SEO expert. Analyze this video and return ONLY valid JSON, no markdown.
+
+Title: ${v.title}
+Description: ${(v.description||'').substring(0,500)}
+Tags: ${(v.tags||[]).join(', ')||'none'}
+Views: ${s?.viewCount||0} | Likes: ${s?.likeCount||0} | Comments: ${s?.commentCount||0}
+Published: ${v.publishedAt}
+
+Return this exact JSON structure:
+{"viralScore":<0-100>,"viralReasons":["<r1>","<r2>","<r3>"],"suggestedTitle":"<under 70 chars>","suggestedDescription":"<200-300 words with keywords and CTA>","suggestedTags":["<t1>","<t2>","<t3>","<t4>","<t5>","<t6>","<t7>","<t8>","<t9>","<t10>"],"suggestedHashtags":["#h1","#h2","#h3","#h4","#h5"],"optimizationTips":["<tip1>","<tip2>","<tip3>"],"thumbnailText":"<2-4 punchy CAPS words>","thumbnailColors":{"bg1":"<hex>","bg2":"<hex>","text":"#FFFFFF","accent":"<hex>"},"thumbnailConcept":"<one sentence>","clonePrompt":"<200 word AI recreation prompt>"}`,2200);
+  return JSON.parse(raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim());
+}
+
+/* ════════════════════════════════
+   DASHBOARD
+════════════════════════════════ */
+function renderDashboard(){
+  const sn=S.channel.snippet,st=S.channel.statistics;
+  const th=sn.thumbnails?.medium?.url||sn.thumbnails?.default?.url;
+
+  // Sidebar channel info
+  if(th){
+    $('sb-ch-img').src=th;$('sb-ch-img').style.display='block';
+    $('sb-ch-ph').style.display='none';
+  } else {
+    $('sb-ch-ph').textContent=sn.title?.[0]||'C';
+  }
+  $('sb-ch-name').textContent=sn.title;
+  $('sb-ch-sub').textContent=`${fmtNum(st.subscriberCount)} subs · ${S.videos.length} vids`;
+
+  const tv=S.videos.reduce((a,v)=>a+parseInt(v.statistics?.viewCount||0),0);
+  const tl=S.videos.reduce((a,v)=>a+parseInt(v.statistics?.likeCount||0),0);
+  $('ms-views').textContent=fmtNum(tv);
+  $('ms-likes').textContent=fmtNum(tl);
+
+  switchTab('videos');
+}
+
+/* ════════════════════════════════
+   TAB SWITCHING
+════════════════════════════════ */
+function switchTab(tab){
+  S.currentTab=tab;
+  qsa('.sb-item').forEach(el=>el.classList.remove('active'));
+  $('tab-'+tab)?.classList.add('active');
+  renderCurrentTab();
+}
+
+function renderCurrentTab(){
+  const titles={videos:'🎬 My Videos',outliers:'📊 Outlier Analysis',thumbnail:'🖼️ Thumbnail Studio',prompts:'🤖 Clone Prompt Generator'};
+  $('pg-title').textContent=titles[S.currentTab]||'';
+  if(S.currentTab==='videos') renderVideosTab();
+  else if(S.currentTab==='outliers') renderOutliersTab();
+  else if(S.currentTab==='thumbnail') renderThumbnailTab();
+  else if(S.currentTab==='prompts') renderPromptsTab();
+}
+
+/* ════════════════════════════════
+   VIDEOS TAB
+════════════════════════════════ */
+function renderVideosTab(){
+  $('pg-actions').innerHTML=`<div style="display:flex;gap:8px;align-items:center">
+    <input class="inp" id="vid-search" style="width:190px;padding:7px 12px;font-size:13px" placeholder="🔍 Search..." oninput="filterVideos()">
+    <select class="inp" id="vid-sort" style="width:110px;padding:7px 10px;font-size:13px" onchange="filterVideos()">
+      <option value="date">Latest</option><option value="views">Most Viewed</option><option value="likes">Most Liked</option>
+    </select></div>`;
+  $('pg-body').innerHTML=`<div class="videos-layout">
+    <div class="vid-list" id="vl"><div class="vid-grid" id="vid-grid"></div></div>
+    <div id="studio-panel"><div class="empty" style="height:100%"><div class="empty-icon">🎬</div><div class="empty-title">Select a Video</div><div class="empty-sub">Click any video to analyze &amp; optimize with AI</div></div></div>
+  </div>`;
+  filterVideos();
+}
+
+function filterVideos(){
+  const q=($('vid-search')?.value||'').toLowerCase();
+  const sort=$('vid-sort')?.value||'date';
+  let vids=S.videos.filter(v=>!q||v.snippet?.title?.toLowerCase().includes(q));
+  vids.sort((a,b)=>{
+    if(sort==='views') return(parseInt(b.statistics?.viewCount)||0)-(parseInt(a.statistics?.viewCount)||0);
+    if(sort==='likes') return(parseInt(b.statistics?.likeCount)||0)-(parseInt(a.statistics?.likeCount)||0);
+    return new Date(b.snippet?.publishedAt||0)-new Date(a.snippet?.publishedAt||0);
+  });
+  const grid=$('vid-grid');if(!grid) return;
+  if(!vids.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">No videos found</div></div>`;return;}
+  grid.innerHTML=vids.map(v=>{
+    const th=v.snippet?.thumbnails?.maxres?.url||v.snippet?.thumbnails?.high?.url||v.snippet?.thumbnails?.medium?.url;
+    const s=v.statistics||{};
+    const analyzed=!!S.analysisCache[v.id];
+    const noHD=!v.snippet?.thumbnails?.maxres;
+    return`<div class="vid-card ${S.selectedVideo?.id===v.id?'sel':''}" onclick="selectVideo('${v.id}')">
+      ${th?`<img class="vid-thumb" src="${th}" alt="" loading="lazy">`:`<div class="vid-thumb-ph">🎬</div>`}
+      <div class="vid-info">
+        <div class="vid-title">${escH(v.snippet?.title||'')}</div>
+        <div class="vid-stats">
+          <div class="vs">👁 <b>${fmtNum(s.viewCount)}</b></div>
+          <div class="vs">👍 <b>${fmtNum(s.likeCount)}</b></div>
+          <div class="vs">💬 <b>${fmtNum(s.commentCount)}</b></div>
+        </div>
+        <div class="vid-date">${fmtDate(v.snippet?.publishedAt)}${analyzed?'<span class="analyzed-badge">✓ AI</span>':''}${noHD?'<span class="no-thumb-badge">No HD</span>':''}</div>
+      </div></div>`;
+  }).join('');
+}
+
+function selectVideo(id){
+  S.selectedVideo=S.videos.find(v=>v.id===id)||null;
+  if(!S.selectedVideo) return;
+  S.studioTab='analysis';
+  filterVideos();
+  renderStudio();
+}
+
+/* ════════════════════════════════
+   STUDIO
+════════════════════════════════ */
+function renderStudio(){
+  const sp=$('studio-panel');if(!sp||!S.selectedVideo) return;
+  const v=S.selectedVideo,s=v.statistics||{};
+  const th=v.snippet?.thumbnails?.maxres?.url||v.snippet?.thumbnails?.high?.url||v.snippet?.thumbnails?.medium?.url;
+  const a=S.analysisCache[v.id];
+  sp.innerHTML=`
+    <div style="padding:14px;border-bottom:1px solid var(--border)">
+      ${th?`<img src="${th}" style="width:100%;border-radius:9px;margin-bottom:10px;aspect-ratio:16/9;object-fit:cover" alt="">`:`<div class="vid-thumb-ph" style="border-radius:9px;margin-bottom:10px">🎬</div>`}
+      <div style="font-size:12px;font-weight:600;line-height:1.4;margin-bottom:10px">${escH(v.snippet?.title||'')}</div>
+      <div class="stu-stats">
+        <div class="stu-stat"><div class="stu-stat-v">${fmtNum(s.viewCount)}</div><div class="stu-stat-l">Views</div></div>
+        <div class="stu-stat"><div class="stu-stat-v">${fmtNum(s.likeCount)}</div><div class="stu-stat-l">Likes</div></div>
+        <div class="stu-stat"><div class="stu-stat-v">${fmtNum(s.commentCount)}</div><div class="stu-stat-l">Comments</div></div>
+      </div>
+    </div>
+    ${!a?`<div style="padding:14px">
+      <button class="btn btn-primary" style="width:100%;padding:13px" onclick="runAnalysis()">🧠 Run AI Analysis</button>
+      <div style="font-size:11px;color:var(--t3);text-align:center;margin-top:8px">Analyzes title, tags, description & viral score</div>
+    </div>`:`
+    <div style="padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(124,58,237,.05);display:flex;align-items:center;gap:12px">
+      ${gaugeHTML(a.viralScore||0)}
+      <div style="flex:1">${(a.viralReasons||[]).slice(0,2).map(r=>`<div style="font-size:11px;color:var(--t2);margin-bottom:3px">• ${escH(r)}</div>`).join('')}</div>
+    </div>
+    <div class="stu-tabs">
+      <div class="stu-tab ${S.studioTab==='analysis'?'active':''}" onclick="stuTab('analysis')">🔍</div>
+      <div class="stu-tab ${S.studioTab==='optimize'?'active':''}" onclick="stuTab('optimize')">⚡</div>
+      <div class="stu-tab ${S.studioTab==='thumbnail'?'active':''}" onclick="stuTab('thumbnail')">🖼️</div>
+      <div class="stu-tab ${S.studioTab==='prompt'?'active':''}" onclick="stuTab('prompt')">🤖</div>
+    </div>
+    <div class="stu-body" id="stu-body"></div>
+    <div style="padding:12px;border-top:1px solid var(--border)">
+      <button class="btn btn-ghost btn-sm" style="width:100%" onclick="runAnalysis()">🔄 Re-Analyze</button>
+    </div>`}`;
+  if(a) renderStuBody();
+}
+
+function gaugeHTML(score){
+  const c=2*Math.PI*38,off=c-(score/100)*c;
+  const col=score>=75?'var(--green)':score>=50?'var(--cyan)':score>=25?'var(--yellow)':'var(--red)';
+  const lbl=score>=75?'Great':score>=50?'Good':score>=25?'Fair':'Poor';
+  return`<svg width="88" height="88" viewBox="0 0 88 88" style="flex-shrink:0">
+    <circle cx="44" cy="44" r="38" fill="none" stroke="var(--surf2)" stroke-width="7"/>
+    <circle cx="44" cy="44" r="38" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 44 44)" style="transition:stroke-dashoffset 1s ease"/>
+    <text x="44" y="40" text-anchor="middle" fill="var(--text)" font-size="17" font-weight="800" font-family="Syne,sans-serif">${score}</text>
+    <text x="44" y="56" text-anchor="middle" fill="${col}" font-size="10" font-family="DM Sans,sans-serif">${lbl}</text>
+  </svg>`;
+}
+
+function stuTab(t){
+  S.studioTab=t;
+  qsa('.stu-tab').forEach((el,i)=>{
+    const map=['analysis','optimize','thumbnail','prompt'];
+    el.classList.toggle('active',map[i]===t);
+  });
+  renderStuBody();
+}
+
+function renderStuBody(){
+  const b=$('stu-body');if(!b) return;
+  const a=S.analysisCache[S.selectedVideo?.id];if(!a) return;
+  if(S.studioTab==='analysis'){
+    b.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:10px">💡 Why It's Not Going Viral</div>
+    ${(a.optimizationTips||[]).map((t,i)=>`<div class="ai-item">
+      <div class="ai-num" style="background:rgba(${i%2?'124,58,237':'255,50,81'},.12);color:var(--${i%2?'violet':'red'})">${i+1}</div>
+      <div>${escH(t)}</div></div>`).join('')}`;
+  } else if(S.studioTab==='optimize'){
+    b.innerHTML=`
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">✏️ Title</div>
+          <button class="btn btn-green btn-sm" onclick="applyTitle()">Apply to YT</button>
+        </div>
+        <input class="inp" id="opt-title" style="font-size:13px" value="${escH(a.suggestedTitle||'')}">
+        <div id="tl" style="font-size:10px;color:var(--t3);text-align:right;margin-top:3px">${(a.suggestedTitle||'').length}/100</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📄 Description</div>
+        <textarea class="tarea" id="opt-desc" style="min-height:80px;font-size:12px">${escH(a.suggestedDescription||'')}</textarea>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:6px">🏷️ Tags</div>
+        <div>${(a.suggestedTags||[]).map(t=>`<span class="chip chip-v">${escH(t)}</span>`).join('')}</div>
+      </div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:6px"># Hashtags</div>
+        <div>${(a.suggestedHashtags||[]).map(h=>`<span class="chip chip-g">${escH(h)}</span>`).join('')}</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:12px" onclick="applyAll()">⚡ Apply All to YouTube</button>`;
+    $('opt-title')?.addEventListener('input',e=>{$('tl').textContent=e.target.value.length+'/100';$('tl').style.color=e.target.value.length>70?'var(--red)':'var(--t3)';});
+  } else if(S.studioTab==='thumbnail'){
+    b.innerHTML=`
+      <div style="font-size:12px;color:var(--t3);margin-bottom:8px">💡 <b style="color:var(--t2)">${escH(a.thumbnailConcept||'')}</b></div>
+      <div id="tb-prev-area">
+        <button class="btn btn-violet" style="width:100%;padding:12px" onclick="genThumbStudio()">🎨 Generate Viral Thumbnail</button>
+      </div>
+      <div class="alert alert-warn" style="font-size:11px;margin-top:10px">⚠️ <span>Clicking "Apply" will update your YouTube video's thumbnail immediately.</span></div>`;
+  } else if(S.studioTab==='prompt'){
+    b.innerHTML=`
+      <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px">🤖 AI Clone Prompt</div>
+      <div class="prompt-box">${escH(a.clonePrompt||'')}</div>
+      <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px" onclick="navigator.clipboard?.writeText(decodeURIComponent('${encodeURIComponent(a.clonePrompt||'')}'));toast('Copied!','success')">📋 Copy Prompt</button>`;
+  }
+}
+
+/* ════════════════════════════════
+   AI + APPLY
+════════════════════════════════ */
+async function runAnalysis(){
+  if(!S.selectedVideo) return;
+  const sp=$('studio-panel'),btn=sp?.querySelector('button');
+  if(btn){btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:16px;height:16px"></div> Analyzing...';}
+  try{
+    const r=await analyzeVideoAI(S.selectedVideo);
+    S.analysisCache[S.selectedVideo.id]=r;
+    toast('Analysis complete!','success');
+    renderStudio();
+  }catch(e){toast('Analysis failed: '+e.message,'error');if(btn){btn.disabled=false;btn.innerHTML='🧠 Run AI Analysis';}}
+}
+
+async function applyTitle(){
+  const t=$('opt-title')?.value;if(!t||!S.selectedVideo) return;
+  const btn=event.target;btn.disabled=true;btn.textContent='Applying...';
+  try{
+    await updateVideoMeta(S.selectedVideo.id,{...S.selectedVideo.snippet,title:t});
+    S.selectedVideo.snippet.title=t;
+    const idx=S.videos.findIndex(v=>v.id===S.selectedVideo.id);
+    if(idx>=0) S.videos[idx].snippet.title=t;
+    toast('Title updated! ✅','success');
+  }catch(e){toast('Failed: '+e.message,'error');}
+  btn.disabled=false;btn.textContent='Apply to YT';
+}
+
+async function applyAll(){
+  const btn=event.target;btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:14px;height:14px"></div> Applying...';
+  try{
+    const t=$('opt-title')?.value||S.selectedVideo.snippet.title;
+    const d=$('opt-desc')?.value||S.selectedVideo.snippet.description;
+    const a=S.analysisCache[S.selectedVideo.id];
+    const tags=a?.suggestedTags||S.selectedVideo.snippet.tags||[];
+    const h=(a?.suggestedHashtags||[]).join(' ');
+    await updateVideoMeta(S.selectedVideo.id,{...S.selectedVideo.snippet,title:t,description:d+'\n\n'+h,tags});
+    toast('All optimizations applied! ✅','success');
+  }catch(e){toast('Failed: '+e.message,'error');}
+  btn.disabled=false;btn.innerHTML='⚡ Apply All to YouTube';
+}
+
+/* ════════════════════════════════
+   THUMBNAIL
+════════════════════════════════ */
+window._tc={bg1:'#FF3251',bg2:'#7C3AED',text:'#FFFFFF',accent:'#FFB547'};
+
+function drawThumb(text,colors,title){
+  const cv=$('thumb-canvas');cv.width=1280;cv.height=720;
+  const c=cv.getContext('2d');
+  const g=c.createLinearGradient(0,0,1280,720);
+  g.addColorStop(0,colors.bg1||'#FF3251');g.addColorStop(1,colors.bg2||'#7C3AED');
+  c.fillStyle=g;c.fillRect(0,0,1280,720);
+  c.save();c.globalAlpha=.12;
+  for(let i=0;i<6;i++){c.beginPath();c.arc(960+i*55,360,70+i*45,0,Math.PI*2);c.strokeStyle=colors.text||'#fff';c.lineWidth=3;c.stroke();}
+  c.restore();
+  const ov=c.createLinearGradient(0,0,720,0);ov.addColorStop(0,'rgba(0,0,0,.72)');ov.addColorStop(1,'rgba(0,0,0,0)');
+  c.fillStyle=ov;c.fillRect(0,0,1280,720);
+  c.font='bold 90px Impact,"Arial Black",sans-serif';c.textBaseline='middle';
+  const words=(text||'WATCH NOW').toUpperCase().split(' ');
+  let lines=[],line='';
+  for(const w of words){const test=line+(line?' ':'')+w;if(c.measureText(test).width>660){if(line)lines.push(line);line=w;}else line=test;}
+  if(line)lines.push(line);
+  const lh=108,sy=360-(lines.length-1)*lh/2;
+  lines.forEach((l,i)=>{c.fillStyle='rgba(0,0,0,.45)';c.fillText(l,63,sy+i*lh+5);c.fillStyle=colors.text||'#fff';c.fillText(l,60,sy+i*lh);});
+  c.fillStyle=colors.accent||'#FF3251';c.fillRect(0,706,500,14);
+  if(title){c.font='27px "DM Sans",Arial,sans-serif';c.fillStyle='rgba(255,255,255,.7)';c.fillText((title.substring(0,60)+(title.length>60?'…':'')),60,676);}
+  return cv.toDataURL('image/jpeg',.93);
+}
+
+async function dataUrlToBlob(d){
+  return new Promise(res=>{
+    const[h,data]=d.split(','),mime=h.match(/:(.*?);/)[1];
+    const bytes=atob(data),arr=new Uint8Array(bytes.length);
+    for(let i=0;i<bytes.length;i++) arr[i]=bytes.charCodeAt(i);
+    res(new Blob([arr],{type:mime}));
+  });
+}
+
+function genThumbStudio(){
+  const a=S.analysisCache[S.selectedVideo?.id];if(!a) return;
+  window._tc={...a.thumbnailColors||{bg1:'#FF3251',bg2:'#7C3AED',text:'#FFFFFF',accent:'#FFB547'}};
+  const url=drawThumb(a.thumbnailText||'WATCH THIS',window._tc,S.selectedVideo.snippet.title);
+  const area=$('tb-prev-area');
+  area.innerHTML=`
+    <img src="${url}" id="tb-img" style="width:100%;border-radius:9px;margin-bottom:10px">
+    <div style="margin-bottom:10px">
+      <label style="font-size:11px;color:var(--t3);display:block;margin-bottom:4px">Thumbnail Text</label>
+      <input class="inp" id="tb-txt" value="${escH(a.thumbnailText||'WATCH THIS')}" style="font-size:13px">
+    </div>
+    <div class="color-grid" style="margin-bottom:10px">
+      ${Object.entries(window._tc).map(([k,v])=>`<div>
+        <label style="font-size:10px;color:var(--t3);display:block;margin-bottom:3px">${k.replace('bg1','BG1').replace('bg2','BG2')}</label>
+        <div class="color-row"><input type="color" value="${v}" oninput="window._tc['${k}']=this.value">
+        <input class="inp" value="${v}" oninput="window._tc['${k}']=this.value" style="flex:1;padding:5px 8px;font-size:10px;font-family:'JetBrains Mono',monospace"></div>
+      </div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="previewThumb()">🔄 Preview</button>
+      <button class="btn btn-green btn-sm" id="apply-tb-btn" onclick="applyThumb()">⬆️ Apply to YouTube</button>
+    </div>`;
+}
+
+function previewThumb(){
+  const url=drawThumb($('tb-txt')?.value||'WATCH THIS',window._tc,S.selectedVideo?.snippet?.title);
+  const img=$('tb-img');if(img) img.src=url;
+}
+
+async function applyThumb(){
+  const url=drawThumb($('tb-txt')?.value||'WATCH THIS',window._tc,S.selectedVideo?.snippet?.title);
+  const btn=$('apply-tb-btn');btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:14px;height:14px"></div> Uploading...';
+  try{
+    const blob=await dataUrlToBlob(url);
+    await uploadThumb(S.selectedVideo.id,blob);
+    toast('Thumbnail applied to YouTube! ✅','success');btn.innerHTML='✅ Done!';
+  }catch(e){toast('Failed: '+e.message,'error');btn.disabled=false;btn.innerHTML='⬆️ Apply to YouTube';}
+}
+
+/* ════════════════════════════════
+   OUTLIERS
+════════════════════════════════ */
+function renderOutliersTab(){
+  $('pg-actions').innerHTML='';
+  const ws=S.videos.filter(v=>v.statistics?.viewCount);
+  if(!ws.length){$('pg-body').innerHTML=`<div class="empty" style="padding:80px 24px"><div class="empty-icon">📊</div><div class="empty-title">No data yet</div><div class="empty-sub">Your videos need views first</div></div>`;return;}
+  const views=ws.map(v=>parseInt(v.statistics.viewCount));
+  const avg=views.reduce((a,b)=>a+b,0)/views.length;
+  const std=Math.sqrt(views.map(v=>(v-avg)**2).reduce((a,b)=>a+b,0)/views.length)||1;
+  const sc=ws.map(v=>({...v,vw:parseInt(v.statistics.viewCount),z:(parseInt(v.statistics.viewCount)-avg)/std})).sort((a,b)=>b.vw-a.vw);
+  const hi=sc.filter(v=>v.z>1.5),lo=sc.filter(v=>v.z<-0.8);
+
+  $('pg-body').innerHTML=`<div style="padding:22px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px">
+      ${[{v:fmtNum(avg),l:'Avg Views',c:'var(--text)'},{v:hi.length,l:'🚀 Viral',c:'var(--green)'},{v:lo.length,l:'⚠️ Low',c:'var(--red)'},{v:sc.length,l:'Total',c:'var(--violet)'}].map(s=>`<div class="card card-p" style="text-align:center"><div class="syne" style="font-size:26px;font-weight:800;color:${s.c}">${s.v}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${s.l}</div></div>`).join('')}
+    </div>
+    <div class="card" style="margin-bottom:22px">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border)"><div class="syne" style="font-weight:700;font-size:14px">Views Distribution</div></div>
+      <div style="padding:16px"><canvas id="out-chart" height="80"></canvas></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:12px">🚀 Viral (${hi.length})</div>
+        ${hi.length?hi.map(v=>`<div class="out-card">
+          <div style="font-size:12px;font-weight:600;line-height:1.35;margin-bottom:7px">${escH(v.snippet?.title?.substring(0,55)||'')}…</div>
+          <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px">
+            <span class="mono" style="font-size:12px;color:var(--green);font-weight:700">${fmtNum(v.vw)} views</span>
+            <span style="background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2);border-radius:50px;padding:2px 8px;font-size:10px;font-weight:700">+${(((v.vw-avg)/avg)*100).toFixed(0)}%</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="analyzeOutlier('${v.id}','clone')">🤖 Clone This Video</button>
+          <div id="or-${v.id}"></div></div>`).join(''):`<div style="color:var(--t3);font-size:13px">Keep creating! 🎉</div>`}
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:12px">⚠️ Underperforming (${lo.length})</div>
+        ${lo.length?lo.map(v=>`<div class="out-card">
+          <div style="font-size:12px;font-weight:600;line-height:1.35;margin-bottom:7px">${escH(v.snippet?.title?.substring(0,55)||'')}…</div>
+          <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px">
+            <span class="mono" style="font-size:12px;color:var(--red);font-weight:700">${fmtNum(v.vw)} views</span>
+            <span style="background:rgba(255,50,81,.1);color:var(--red);border:1px solid rgba(255,50,81,.2);border-radius:50px;padding:2px 8px;font-size:10px;font-weight:700">${(((v.vw-avg)/avg)*100).toFixed(0)}%</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="analyzeOutlier('${v.id}','fix')">🔍 Diagnose & Fix</button>
+          <div id="or-${v.id}"></div></div>`).join(''):`<div style="color:var(--t3);font-size:13px">All good! 🎉</div>`}
+      </div>
+    </div></div>`;
+
+  setTimeout(()=>{
+    const ctx=$('out-chart')?.getContext('2d');if(!ctx) return;
+    const top=sc.slice(0,20);
+    new Chart(ctx,{
+      type:'bar',
+      data:{labels:top.map((_,i)=>i+1),datasets:[{data:top.map(v=>v.vw),backgroundColor:top.map(v=>v.z>1.5?'rgba(16,185,129,.7)':v.z<-0.8?'rgba(255,50,81,.7)':'rgba(124,58,237,.5)'),borderRadius:4,borderSkipped:false}]},
+      options:{plugins:{legend:{display:false},tooltip:{callbacks:{title:([i])=>sc[i.dataIndex]?.snippet?.title?.substring(0,40)||'',label:i=>`${fmtNum(i.raw)} views`}}},scales:{x:{display:false,grid:{display:false}},y:{ticks:{color:'#55537A',callback:v=>fmtNum(v),font:{family:'JetBrains Mono',size:10}},grid:{color:'rgba(255,255,255,.04)'}}},animation:{duration:700}},
+      plugins:[{id:'avg',afterDraw(ch){const{ctx:c,scales:{y}}=ch;const yp=y.getPixelForValue(avg);c.save();c.setLineDash([6,4]);c.strokeStyle='rgba(245,158,11,.8)';c.lineWidth=2;c.beginPath();c.moveTo(ch.chartArea.left,yp);c.lineTo(ch.chartArea.right,yp);c.stroke();c.restore();}}]
+    });
+  },100);
+}
+
+async function analyzeOutlier(id,mode){
+  const v=S.videos.find(x=>x.id===id);if(!v) return;
+  const btn=event.target;btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:13px;height:13px"></div>';
+  try{
+    const a=await analyzeVideoAI(v);
+    S.analysisCache[id]=a;
+    const el=$('or-'+id);if(!el) return;
+    if(mode==='clone'){
+      el.innerHTML=`<div style="margin-top:10px">${(a.viralReasons||[]).slice(0,2).map(r=>`<div style="font-size:11px;color:var(--t2);margin-bottom:2px">• ${escH(r)}</div>`).join('')}<div style="margin-top:7px"><div style="font-size:10px;color:var(--t3);margin-bottom:3px">Clone Prompt:</div><div class="prompt-box" style="max-height:65px;font-size:11px">${escH(a.clonePrompt?.substring(0,200)||'')}...</div></div></div>`;
+    } else {
+      el.innerHTML=`<div style="margin-top:10px">${(a.optimizationTips||[]).slice(0,2).map(t=>`<div style="font-size:11px;color:var(--t2);margin-bottom:2px">• ${escH(t)}</div>`).join('')}<div style="margin-top:6px;font-size:12px;font-weight:700;color:var(--text)">Fix: ${escH(a.suggestedTitle||'')}</div></div>`;
+    }
+    toast('Done!','success');
+  }catch(e){toast('Error: '+e.message,'error');}
+  btn.disabled=false;btn.innerHTML=mode==='clone'?'✅ Analyzed':'✅ Diagnosed';
+}
+
+/* ════════════════════════════════
+   THUMBNAIL STUDIO TAB
+════════════════════════════════ */
+function renderThumbnailTab(){
+  $('pg-actions').innerHTML='';
+  const noHD=S.videos.filter(v=>!v.snippet?.thumbnails?.maxres);
+  $('pg-body').innerHTML=`
+    ${noHD.length?`<div class="alert alert-warn" style="margin:16px 16px 0;font-size:12px">⚠️ <span><b>${noHD.length} videos</b> have no high-quality thumbnail. Select below to fix!</span></div>`:''}
+    <div class="thumb-layout">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:10px">Select Video</div>
+        <div class="thumb-list" id="th-list"></div>
+      </div>
+      <div id="th-gen">
+        <div class="empty" style="height:400px"><div class="empty-icon">🖼️</div><div class="empty-title">Select a video</div><div class="empty-sub">AI will generate a viral thumbnail</div></div>
+      </div>
+    </div>`;
+  const list=$('th-list');
+  S.videos.forEach(v=>{
+    const th=v.snippet?.thumbnails?.high?.url;
+    const noM=!v.snippet?.thumbnails?.maxres;
+    const d=document.createElement('div');
+    d.className='thumb-vid-row';
+    d.innerHTML=`${th?`<img class="thumb-mini" src="${th}" alt="">`:`<div class="thumb-mini-ph">🎬</div>`}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(v.snippet?.title||'')}</div>
+        <div style="font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:2px">${fmtNum(v.statistics?.viewCount)} views${noM?'<span class="no-thumb-badge" style="margin-left:4px">No HD</span>':''}</div>
+      </div>`;
+    d.onclick=()=>{qsa('.thumb-vid-row').forEach(r=>r.classList.remove('sel'));d.classList.add('sel');showThumbGen(v);};
+    list.appendChild(d);
+  });
+}
+
+function showThumbGen(v){
+  window._tv=v;
+  const th=v.snippet?.thumbnails?.high?.url;
+  $('th-gen').innerHTML=`
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px">${escH(v.snippet?.title?.substring(0,55)||'')}…</div>
+    ${th?`<img src="${th}" style="width:100%;border-radius:9px;margin-bottom:12px;aspect-ratio:16/9;object-fit:cover">`:''}
+    <button class="btn btn-violet" style="width:100%;padding:13px;margin-bottom:10px" id="gen-th-btn" onclick="genThumbForVid()">🧠 Generate AI Thumbnail</button>
+    <div id="th-result"></div>`;
+}
+
+async function genThumbForVid(){
+  const v=window._tv;if(!v) return;
+  const btn=$('gen-th-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Generating...';
+  try{
+    const raw=await callClaude(`Viral YouTube thumbnail for this video.
+Title: ${v.snippet?.title}
+Views: ${v.statistics?.viewCount}
+Return ONLY JSON: {"thumbnailText":"<2-4 CAPS words>","thumbnailColors":{"bg1":"<hex>","bg2":"<hex>","text":"#FFFFFF","accent":"<hex>"},"concept":"<one sentence>"}`,300);
+    const p=JSON.parse(raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim());
+    window._tc={...p.thumbnailColors};
+    const url=drawThumb(p.thumbnailText||'WATCH THIS',window._tc,v.snippet?.title);
+    $('th-result').innerHTML=`
+      <div style="font-size:11px;color:var(--t3);margin-bottom:8px">💡 ${escH(p.concept||'')}</div>
+      <img src="${url}" id="th-prev" style="width:100%;border-radius:9px;margin-bottom:10px">
+      <input class="inp" id="th-text" value="${escH(p.thumbnailText||'WATCH THIS')}" style="margin-bottom:10px;font-size:13px">
+      <div class="color-grid">
+        ${Object.entries(window._tc).map(([k,val])=>`<div>
+          <label style="font-size:10px;color:var(--t3);display:block;margin-bottom:3px">${k.replace('bg1','BG1').replace('bg2','BG2')}</label>
+          <div class="color-row"><input type="color" value="${val}" oninput="window._tc['${k}']=this.value">
+          <input class="inp" value="${val}" oninput="window._tc['${k}']=this.value" style="flex:1;padding:5px 7px;font-size:10px;font-family:'JetBrains Mono',monospace"></div>
+        </div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('th-prev').src=drawThumb(document.getElementById('th-text').value,window._tc,window._tv?.snippet?.title)">🔄 Preview</button>
+        <button class="btn btn-green btn-sm" id="apply-th-btn" onclick="applyThumbVid('${v.id}')">⬆️ Apply to YouTube</button>
+      </div>`;
+  }catch(e){toast('Error: '+e.message,'error');}
+  btn.disabled=false;btn.innerHTML='🧠 Generate AI Thumbnail';
+}
+
+async function applyThumbVid(vid){
+  const url=drawThumb($('th-text')?.value||'WATCH THIS',window._tc,window._tv?.snippet?.title);
+  const btn=$('apply-th-btn');btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:13px;height:13px"></div> Uploading...';
+  try{const blob=await dataUrlToBlob(url);await uploadThumb(vid,blob);toast('Thumbnail applied! ✅','success');btn.innerHTML='✅ Applied!';}
+  catch(e){toast('Failed: '+e.message,'error');btn.disabled=false;btn.innerHTML='⬆️ Apply to YouTube';}
+}
+
+/* ════════════════════════════════
+   CLONE PROMPTS TAB
+════════════════════════════════ */
+function renderPromptsTab(){
+  $('pg-actions').innerHTML='';
+  $('pg-body').innerHTML=`<div class="pg-layout" style="height:calc(100vh - 60px)">
+    <div class="pg-left">
+      <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:10px">Prompt Type</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">
+        ${[{k:'full',l:'📋 Full'},{k:'script',l:'📝 Script'},{k:'thumb',l:'🖼️ Midjourney'},{k:'seo',l:'📊 SEO'}].map(x=>`<div class="type-pill ${x.k==='full'?'active':''}" id="pt-${x.k}" onclick="setPT('${x.k}')">${x.l}</div>`).join('')}
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px">Select Video</div>
+      <div id="pt-vids"></div>
+    </div>
+    <div class="pg-right" id="pt-result">
+      <div class="empty" style="height:50vh"><div class="empty-icon">🤖</div><div class="empty-title">Select a video</div><div class="empty-sub">Choose a video to generate its AI clone prompt</div></div>
+    </div>
+  </div>`;
+  window._pt='full';window._pv=null;
+  const vl=$('pt-vids');
+  S.videos.forEach(v=>{
+    const d=document.createElement('div');d.className='pg-vid-row';
+    d.innerHTML=`<div style="font-size:12px;font-weight:600;line-height:1.3;margin-bottom:3px">${escH(v.snippet?.title?.substring(0,55)||'')}…</div><div style="font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace">${fmtNum(v.statistics?.viewCount)} views</div>`;
+    d.onclick=()=>{qsa('.pg-vid-row').forEach(r=>r.classList.remove('sel'));d.classList.add('sel');window._pv=v;showPTResult(v);};
+    vl.appendChild(d);
+  });
+}
+
+function setPT(t){window._pt=t;qsa('.type-pill').forEach(p=>p.classList.remove('active'));$('pt-'+t)?.classList.add('active');}
+
+function showPTResult(v){
+  $('pt-result').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div style="font-size:14px;font-weight:600;line-height:1.4;flex:1">${escH(v.snippet?.title||'')}</div>
+      <button class="btn btn-primary btn-sm" style="margin-left:12px;flex-shrink:0" onclick="genPT()">🧠 Generate</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+      ${[{l:'Views',v:fmtNum(v.statistics?.viewCount)},{l:'Likes',v:fmtNum(v.statistics?.likeCount)},{l:'Comments',v:fmtNum(v.statistics?.commentCount)}].map(s=>`<div class="card card-p" style="text-align:center"><div class="mono" style="font-size:17px;font-weight:700">${s.v}</div><div style="font-size:10px;color:var(--t3);margin-top:2px">${s.l}</div></div>`).join('')}
+    </div>
+    <div id="pt-gen-area"><div class="empty" style="height:200px"><div class="empty-icon">✨</div><div class="empty-sub">Click Generate</div></div></div>`;
+}
+
+async function genPT(){
+  const v=window._pv;const t=window._pt;if(!v) return;
+  const btn=event.target;btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:13px;height:13px"></div>';
+  const area=$('pt-gen-area');area.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:24px;color:var(--t2)"><div class="spinner"></div> Generating...</div>`;
+  const types={full:'comprehensive video recreation',script:'detailed script and content outline',thumb:'Midjourney/DALL-E thumbnail image generation',seo:'YouTube SEO and search strategy'};
+  try{
+    const raw=await callClaude(`Create a ${types[t]||'video clone'} prompt for recreating this YouTube video concept.
+Title: ${v.snippet?.title}
+Description: ${(v.snippet?.description||'').substring(0,400)}
+Tags: ${(v.snippet?.tags||[]).join(', ')||'N/A'}
+Views: ${v.statistics?.viewCount} | Likes: ${v.statistics?.likeCount}
+
+Write a detailed 300-500 word prompt that creators can use to make a similar video. Include hook, structure, value proposition, CTA, and optimization tips.`,2500);
+    window._lp=raw;
+    area.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;color:var(--t2)">${t.charAt(0).toUpperCase()+t.slice(1)} Prompt</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard?.writeText(window._lp);toast('Copied!','success')">📋 Copy</button>
+        <button class="btn btn-ghost btn-sm" onclick="genPT()">🔄 Regen</button>
+      </div></div>
+    <div class="prompt-box" style="max-height:none">${escH(raw)}</div>`;
+    toast('Prompt generated!','success');
+  }catch(e){toast('Error: '+e.message,'error');area.innerHTML=`<div class="alert alert-error">❌ ${e.message}</div>`;}
+  btn.disabled=false;btn.innerHTML='🧠 Generate';
+}
+</script>
+</body>
+</html>
