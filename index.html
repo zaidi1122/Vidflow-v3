@@ -400,8 +400,8 @@ input[type=color]{width:30px;height:30px;border:none;border-radius:6px;cursor:po
    ⚙️  AAPKO SIRF YEH 2 CHEEZEIN FILL KARNI HAIN
    (Users ko kuch nahi karna padega)
 ════════════════════════════════ */
-const GOOGLE_CLIENT_ID = '517802563004-tg6mh60ic2cfphrk8k6eg9i3t9jh71rq.apps.googleusercontent.com';
-const GEMINI_API_KEY   = 'AIzaSyD1TPBBnivT1ptT3eHR-tNfY1WmR6uasfw';
+const GOOGLE_CLIENT_ID = 'APNA_GOOGLE_CLIENT_ID_YAHAN_LIKHO.apps.googleusercontent.com';
+const GEMINI_API_KEY   = 'APNI_GEMINI_API_KEY_YAHAN_LIKHO';
 // Gemini FREE hai: https://aistudio.google.com/app/apikey
 // Google Client ID FREE hai: https://console.cloud.google.com
 
@@ -704,7 +704,7 @@ async function uploadThumb(videoId,blob){
 async function callClaude(prompt,maxTok=1800){
   // Gemini 1.5 Flash - bilkul FREE hai!
   const r=await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
     {method:'POST',headers:{'Content-Type':'application/json'},
      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTok,temperature:0.7}})}
   );
