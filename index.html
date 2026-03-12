@@ -400,8 +400,8 @@ input[type=color]{width:30px;height:30px;border:none;border-radius:6px;cursor:po
    ⚙️  AAPKO SIRF YEH 2 CHEEZEIN FILL KARNI HAIN
    (Users ko kuch nahi karna padega)
 ════════════════════════════════ */
-const GOOGLE_CLIENT_ID = '517802563004-tg6mh60ic2cfphrk8k6eg9i3t9jh71rq.apps.googleusercontent.com';
-const GEMINI_API_KEY   = 'AIzaSyD1TPBBnivT1ptT3eHR-tNfY1WmR6uasfw';
+const GOOGLE_CLIENT_ID = 'APNA_GOOGLE_CLIENT_ID_YAHAN_LIKHO.apps.googleusercontent.com';
+const GEMINI_API_KEY   = 'APNI_GEMINI_API_KEY_YAHAN_LIKHO';
 // Gemini FREE hai: https://aistudio.google.com/app/apikey
 // Google Client ID FREE hai: https://console.cloud.google.com
 
@@ -491,7 +491,7 @@ function loginWithAccount(idx){
   const stored=JSON.parse(localStorage.getItem('vf_accounts')||'[]');
   const acc=stored[idx];if(!acc) return;
   const redir=encodeURIComponent(location.href.split('#')[0].split('?')[0]);
-  const scope=encodeURIComponent('https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.upload');
+  const scope=encodeURIComponent('openid email profile https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.upload');
   location.href=`https://accounts.google.com/o/oauth2/auth?client_id=${encodeURIComponent(S.clientId)}&redirect_uri=${redir}&response_type=token&scope=${scope}&login_hint=${encodeURIComponent(acc.email||'')}&prompt=none`;
 }
 function addNewAccount(){ initiateGoogleLogin(); }
@@ -501,7 +501,7 @@ function addNewAccount(){ initiateGoogleLogin(); }
 ════════════════════════════════ */
 function initiateGoogleLogin(){
   const redir=encodeURIComponent(location.href.split('#')[0].split('?')[0]);
-  const scope=encodeURIComponent('https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.upload');
+  const scope=encodeURIComponent('openid email profile https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.upload');
   location.href=`https://accounts.google.com/o/oauth2/auth?client_id=${encodeURIComponent(S.clientId)}&redirect_uri=${redir}&response_type=token&scope=${scope}&prompt=select_account`;
 }
 
