@@ -296,6 +296,31 @@ input[type=color]{width:30px;height:30px;border:none;border-radius:6px;cursor:po
       </button>
     </div>
 
+    <!-- FIRST TIME SETUP (collapsible) -->
+    <div class="first-time-section" id="first-time-section">
+      <div class="first-time-toggle" onclick="toggleFirstTime()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="ft-chevron" style="transition:transform .3s"><polyline points="6 9 12 15 18 9"/></svg>
+        <span id="ft-label">⚙️ First time? Enter your Google Client ID</span>
+      </div>
+      <div id="first-time-fields" class="hidden">
+        <div class="alert alert-info" style="font-size:12px;margin-bottom:12px">
+          ℹ️ <div>Get your Client ID from <strong>Google Cloud Console</strong> → APIs & Services → Credentials → OAuth 2.0 Client ID. Enable <strong>YouTube Data API v3</strong>. Add <code id="redir-display" style="background:rgba(0,0,0,.4);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:10px"></code> as redirect URI.</div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="cid-label">Google OAuth Client ID</div>
+          <input class="inp" id="cid-input" placeholder="xxxxx.apps.googleusercontent.com">
+        </div>
+        <div style="margin-bottom:12px">
+          <div class="cid-label">
+            Claude API Key
+            <span style="font-size:10px;color:var(--t3);font-weight:400">(for AI analysis)</span>
+          </div>
+          <input class="inp" id="ck-input" type="password" placeholder="sk-ant-...">
+        </div>
+        <div id="ft-error" class="alert alert-error hidden"></div>
+        <button class="btn btn-violet" style="width:100%" onclick="saveFirstTimeSetup()">Save & Continue →</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -397,19 +422,14 @@ input[type=color]{width:30px;height:30px;border:none;border-radius:6px;cursor:po
 
 <script>
 /* ════════════════════════════════
-   ⚙️  AAPKO SIRF YEH 2 CHEEZEIN FILL KARNI HAIN
-   (Users ko kuch nahi karna padega)
-════════════════════════════════ */
-const GOOGLE_CLIENT_ID = '517802563004-tg6mh60ic2cfphrk8k6eg9i3t9jh71rq.apps.googleusercontent.com';
-const GEMINI_API_KEY   = AIzaSyBVrkgAxs645kZ0x3PtJFgErQdSBGgYoAM';
-// Gemini FREE hai: https://aistudio.google.com/app/apikey
-// Google Client ID FREE hai: https://console.cloud.google.com
-
-/* ════════════════════════════════
    STATE
 ════════════════════════════════ */
+/* == AAPKI SETTINGS == */
+const GOOGLE_CLIENT_ID = '517802563004-tg6mh60ic2cfphrk8k6eg9i3t9jh71rq.apps.googleusercontent.com';
+const GEMINI_API_KEY   = 'AIzaSyBVrkgAxs645kZ0x3PtJFgErQdSBGgYoAM';
+
 const S={
-  clientId: GOOGLE_CLIENT_ID, token:null,
+  clientId:GOOGLE_CLIENT_ID, token:null,
   userInfo:null, channel:null, videos:[],
   selectedVideo:null, analysisCache:{},
   currentTab:'videos', studioTab:'analysis'
@@ -446,6 +466,8 @@ function showScreen(name){
    INIT
 ════════════════════════════════ */
 window.addEventListener('DOMContentLoaded',()=>{
+  const uri=location.href.split('#')[0].split('?')[0];
+  $('redir-display').textContent=uri;
 
   // Check OAuth callback
   const hash=new URLSearchParams(location.hash.slice(1));
@@ -468,33 +490,72 @@ window.addEventListener('DOMContentLoaded',()=>{
 
   // Show landing — detect any stored accounts
   showScreen('landing');
-  tryShowSavedAccounts();
+  if(S.clientId) tryShowSavedAccounts();
 });
 
 /* ════════════════════════════════
-   SAVED ACCOUNTS
+   SAVED ACCOUNTS (from localStorage)
 ════════════════════════════════ */
 function tryShowSavedAccounts(){
   const stored=JSON.parse(localStorage.getItem('vf_accounts')||'[]');
   if(!stored.length) return;
-  const sec=$('accounts-section'),list=$('accounts-list');
+  const sec=$('accounts-section');
+  const list=$('accounts-list');
   sec.classList.remove('hidden');
   list.innerHTML=stored.map((acc,i)=>`
     <div class="account-card" onclick="loginWithAccount(${i})">
-      ${acc.picture?`<img class="account-avatar" src="${acc.picture}" alt="">`:
-        `<div class="account-avatar-ph" style="background:linear-gradient(135deg,${acc.color||'var(--red)'},${acc.color2||'var(--violet)'})">${acc.name?.[0]||'?'}</div>`}
-      <div><div class="acc-name">${escH(acc.name||'')}</div><div class="acc-email">${escH(acc.email||'')}</div></div>
+      ${acc.picture
+        ?`<img class="account-avatar" src="${acc.picture}" alt="">`
+        :`<div class="account-avatar-ph" style="background:linear-gradient(135deg,${acc.color||'var(--red)'},${acc.color2||'var(--violet)'})">${acc.name?.[0]||'?'}</div>`}
+      <div>
+        <div class="acc-name">${escH(acc.name||'')}</div>
+        <div class="acc-email">${escH(acc.email||'')}</div>
+      </div>
       <svg class="acc-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </div>`).join('');
 }
+
 function loginWithAccount(idx){
   const stored=JSON.parse(localStorage.getItem('vf_accounts')||'[]');
-  const acc=stored[idx];if(!acc) return;
+  const acc=stored[idx];
+  if(!acc) return;
+  // If we have a saved token hint, try direct login; otherwise re-auth with hint
   const redir=encodeURIComponent(location.href.split('#')[0].split('?')[0]);
   const scope=encodeURIComponent('openid email profile https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.upload');
-  location.href=`https://accounts.google.com/o/oauth2/auth?client_id=${encodeURIComponent(S.clientId)}&redirect_uri=${redir}&response_type=token&scope=${scope}&login_hint=${encodeURIComponent(acc.email||'')}&prompt=none`;
+  const hint=encodeURIComponent(acc.email||'');
+  location.href=`https://accounts.google.com/o/oauth2/auth?client_id=${encodeURIComponent(S.clientId)}&redirect_uri=${redir}&response_type=token&scope=${scope}&login_hint=${hint}&prompt=none`;
 }
-function addNewAccount(){ initiateGoogleLogin(); }
+
+function addNewAccount(){
+  initiateGoogleLogin();
+}
+
+/* ════════════════════════════════
+   FIRST TIME SETUP
+════════════════════════════════ */
+let ftOpen=false;
+function toggleFirstTime(){
+  ftOpen=!ftOpen;
+  $('first-time-fields').classList.toggle('hidden',!ftOpen);
+  $('ft-chevron').style.transform=ftOpen?'rotate(180deg)':'rotate(0)';
+}
+
+function saveFirstTimeSetup(){
+  const cid=$('cid-input').value.trim();
+  const ck=$('ck-input').value.trim();
+  const err=$('ft-error');
+  if(!cid){err.textContent='⚠️ Client ID is required.';err.classList.remove('hidden');return;}
+  err.classList.add('hidden');
+  S.clientId=cid; S.claudeKey=ck;
+  localStorage.setItem('vf_cid',cid);
+  if(ck) localStorage.setItem('vf_ck',ck);
+  $('ft-label').textContent='⚙️ Change Google Client ID';
+  ftOpen=false;
+  $('first-time-fields').classList.add('hidden');
+  $('ft-chevron').style.transform='rotate(0)';
+  toast('Settings saved!','success');
+  initiateGoogleLogin();
+}
 
 /* ════════════════════════════════
    OAUTH
@@ -529,7 +590,6 @@ function logout(){
 async function afterAuth(){
   showLoading('Signing you in...');
   try {
-    // Try userinfo, fallback to tokeninfo, fallback to empty
     let userInfo=null;
     try{
       const ur=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+S.token}});
@@ -699,16 +759,15 @@ async function uploadThumb(videoId,blob){
 }
 
 /* ════════════════════════════════
-   GEMINI AI API (FREE)
+   CLAUDE API
 ════════════════════════════════ */
 async function callClaude(prompt,maxTok=1800){
-  // Gemini 1.5 Flash - bilkul FREE hai!
   const r=await fetch(
-    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
+    'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key='+GEMINI_API_KEY,
     {method:'POST',headers:{'Content-Type':'application/json'},
      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTok,temperature:0.7}})}
   );
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Gemini API error '+r.status);}
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'AI error '+r.status);}
   const d=await r.json();
   return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
 }
