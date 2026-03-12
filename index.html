@@ -529,16 +529,21 @@ function logout(){
 async function afterAuth(){
   showLoading('Signing you in...');
   try {
-    // Get user info
-    const ur=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',
-      {headers:{Authorization:`Bearer ${S.token}`}});
-    if(!ur.ok) throw new Error('Could not get user info');
-    S.userInfo=await ur.json();
-
-    // Save account for future quick-login
+    // Try userinfo, fallback to tokeninfo, fallback to empty
+    let userInfo=null;
+    try{
+      const ur=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+S.token}});
+      if(ur.ok) userInfo=await ur.json();
+    }catch(_){}
+    if(!userInfo){
+      try{
+        const tr=await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?access_token='+S.token);
+        if(tr.ok){const td=await tr.json();userInfo={name:td.email?td.email.split('@')[0]:'User',email:td.email||'',picture:''};}
+      }catch(_){}
+    }
+    if(!userInfo) userInfo={name:'User',email:'',picture:''};
+    S.userInfo=userInfo;
     saveAccount(S.userInfo);
-
-    // Fetch all channels
     hideLoading();
     showScreen('channels');
     loadChannels();
