@@ -826,27 +826,40 @@ async function callClaude(prompt,maxTok=1800){
 async function analyzeVideoAI(video){
   var v=video.snippet,s=video.statistics||{};
   var title=v.title||'Untitled';
-  var desc=(v.description||'').substring(0,300);
+  var desc=(v.description||'').substring(0,400);
   var tags=(v.tags||[]).join(', ')||'none';
   var views=parseInt(s.viewCount)||0;
   var likes=parseInt(s.likeCount)||0;
+  var published=v.publishedAt||'';
+
+  // Detect content type from title
+  var titleLower=title.toLowerCase();
+  var isNasheed=titleLower.indexOf('noha')>=0||titleLower.indexOf('nasheed')>=0||titleLower.indexOf('naat')>=0||titleLower.indexOf('manqabat')>=0;
+  var isUrdu=titleLower.indexOf('urdu')>=0||/[\u0600-\u06FF]/.test(title);
+  var niche=isNasheed?'Islamic/Noha content':isUrdu?'Urdu content':'YouTube video';
 
   var prompt=[
-    'Analyze this YouTube video and return a JSON object with SEO improvements.',
+    'You are a top YouTube SEO expert specializing in '+niche+'.',
+    'Analyze this video and return a JSON object with real, specific improvements.',
     '',
-    'Video Title: '+title,
+    'Title: '+title,
     'Description: '+desc,
     'Tags: '+tags,
-    'Views: '+views+', Likes: '+likes,
+    'Views: '+views+', Likes: '+likes+', Published: '+published,
+    'Content type: '+niche,
     '',
-    'Return ONLY this JSON (fill all values based on the video topic "'+title+'"):',
-    '{"viralScore":65,"viralReasons":["Reason 1 for this video","Reason 2","Reason 3"],"suggestedTitle":"Improved title for '+title.substring(0,30)+' under 70 chars","suggestedDescription":"Write 150 words description about '+title.substring(0,30)+'","suggestedTags":["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8","tag9","tag10"],"suggestedHashtags":["#hash1","#hash2","#hash3","#hash4","#hash5"],"optimizationTips":["Specific tip 1","Tip 2","Tip 3"],"thumbnailText":"3 CAPS WORDS","thumbnailColors":{"bg1":"#FF2D55","bg2":"#0a0a1a","text":"#FFFFFF","accent":"#FFD700"},"thumbnailConcept":"Describe thumbnail for this video","clonePrompt":"100 word prompt to recreate this video style"}'
+    'Be SPECIFIC to this exact video. For example:',
+    '- thumbnailText should be 2-3 POWER WORDS from THIS video topic',
+    '- suggestedTitle should be SEO-optimized version of this actual title',
+    '- thumbnailColors should match the mood (dark for noha, bright for comedy etc)',
+    '',
+    'Return ONLY valid JSON, no other text:',
+    '{"viralScore":65,"viralReasons":["specific reason about this video","second reason","third reason"],"suggestedTitle":"SEO optimized title under 70 chars","suggestedDescription":"150 word engaging description for this specific video with keywords","suggestedTags":["most relevant tag","tag2","tag3","tag4","tag5","tag6","tag7","tag8","tag9","tag10"],"suggestedHashtags":["#mostrelevant","#tag2","#tag3","#tag4","#tag5"],"optimizationTips":["actionable tip 1 specific to this video","tip 2","tip 3"],"thumbnailText":"2-3 POWER WORDS","thumbnailColors":{"bg1":"#1a0a2e","bg2":"#0a0005","text":"#FFFFFF","accent":"#C9A84C"},"thumbnailConcept":"professional thumbnail concept for this specific video","clonePrompt":"detailed prompt to recreate this style of video"}'
   ].join('\n');
 
   var raw='';
-  try{ raw=await callClaude(prompt,2000); }catch(e){ raw=''; }
+  try{ raw=await callClaude(prompt,2200); }catch(e){ raw=''; }
 
-  // Try to extract JSON from response
   var parsed=null;
   if(raw){
     var m=raw.match(/\{[\s\S]*\}/);
@@ -855,36 +868,36 @@ async function analyzeVideoAI(video){
     }
   }
 
-  // If parsed but missing key fields, treat as failed
-  if(parsed && !parsed.suggestedTitle && !parsed.viralScore) parsed=null;
+  if(parsed&&typeof parsed.viralScore==='number') return parsed;
 
-  // Smart fallback based on video data
-  if(!parsed){
-    var w=title.split(' ').filter(function(x){return x.length>3;});
-    var niche=w.slice(0,3).join(' ');
-    parsed={
-      viralScore: views>100?62:views>50?48:35,
-      viralReasons:[
-        'Title "'+title.substring(0,40)+'" needs stronger emotional hook',
-        views<100?'Very low views - needs better SEO optimization':'Good view count but engagement could improve',
-        'Thumbnail design needs to match video topic better'
-      ],
-      suggestedTitle: title.length>60 ? title.substring(0,58)+'...' : title+' | Must Watch '+new Date().getFullYear(),
-      suggestedDescription: 'Watch this amazing video about '+title+'.\n\nIn this video we cover everything you need to know. Whether you are a beginner or expert, this content is for you!\n\n✅ Watch till the end for the most important part!\n🔔 Subscribe for more videos like this!\n👍 Like if you found value!\n💬 Comment your thoughts below!\n\n'+w.slice(0,5).map(function(x){return '#'+x;}).join(' '),
-      suggestedTags: w.concat(['youtube','viral','trending','mustwatch','2025','amazing','best','new','top','subscribe']).slice(0,10),
-      suggestedHashtags: ['#'+(w[0]||'video'),'#'+(w[1]||'youtube'),'#viral','#trending','#fyp'],
-      optimizationTips:[
-        'Add timestamps in description to improve watch time by 30%',
-        'Use a question or number in title e.g. "5 Things About '+niche+'"',
-        'Add bright face/reaction in thumbnail to boost CTR by 40%'
-      ],
-      thumbnailText: (w.slice(0,2).join(' ')||'MUST WATCH').toUpperCase(),
-      thumbnailColors:{bg1:'#FF2D55',bg2:'#0a0a1a',text:'#FFFFFF',accent:'#FFD700'},
-      thumbnailConcept:'Bold text overlay on video screenshot with high contrast colors relevant to '+niche,
-      clonePrompt:'Create an engaging YouTube video about '+title+'. Start with a strong hook in first 5 seconds. Use clear visuals and simple explanation. End with strong CTA to subscribe.'
-    };
-  }
-  return parsed;
+  // Smart fallback - video-specific
+  var w=title.replace(/[|#@!?]/g,' ').split(' ').filter(function(x){return x.length>3;});
+  var thumbWords=w.slice(0,2).join(' ').toUpperCase()||'MUST WATCH';
+  var yr=new Date().getFullYear();
+  var accent=isNasheed?'#C9A84C':views>500?'#FFD700':'#22D3EE';
+  var bg1=isNasheed?'#1a0510':'#0a0a1a';
+
+  return {
+    viralScore:views>500?72:views>100?55:38,
+    viralReasons:[
+      '"'+title.substring(0,35)+'" - title mein aur emotional words add karein',
+      views<50?'Bohot kam views hain - SEO zaroor improve karein':'Views achi hain - ab engagement badhao',
+      'Thumbnail mein face ya strong visual element add karein'
+    ],
+    suggestedTitle:title.substring(0,55)+' | '+yr+' | Must Watch',
+    suggestedDescription:'Assalam o Alaikum! Is video mein hum ne '+title+' present kiya hai.\n\nYeh content specially un logon ke liye hai jo '+w.slice(0,3).join(', ')+' mein interest rakhte hain.\n\nVideo ko end tak zaroor dekhein - bohot important cheezein hain!\n\n📌 Subscribe karein aur bell icon dabayein notifications ke liye!\n👍 Like karein agar pasand aaya!\n💬 Comment mein apne thoughts likhein!\n\n'+w.map(function(x){return '#'+x;}).join(' ')+' #viral #trending #'+yr,
+    suggestedTags:w.slice(0,5).concat([isNasheed?'noha':'viral',isNasheed?'islamic':'youtube',isNasheed?'nohay':'trending','2025','mustwatch','subscribe','pakistan','urdu']).slice(0,10),
+    suggestedHashtags:['#'+(w[0]||'video'),'#'+(w[1]||'youtube'),isNasheed?'#noha':'#viral',isNasheed?'#islamic':'#trending','#'+yr],
+    optimizationTips:[
+      'Pehle 5 seconds mein strong hook lagao - viewers retain hote hain',
+      'Description mein timestamps add karo (00:00 - Intro, etc.) - watch time badhta hai',
+      'Thumbnail mein bold face expression use karo - CTR 40% tak badh sakta hai'
+    ],
+    thumbnailText:thumbWords,
+    thumbnailColors:{bg1:bg1,bg2:'#000000',text:'#FFFFFF',accent:accent},
+    thumbnailConcept:isNasheed?'Dark background with golden calligraphy-style text, candle or rose visual':'Bold text on video screenshot with high contrast overlay',
+    clonePrompt:'Create a '+niche+' YouTube video about "'+title+'". Start with emotional hook. Use high quality visuals. Add subtitles. End with strong CTA. Optimize title with keywords: '+w.slice(0,5).join(', ')+'.'
+  };
 }
 
 /* ════════════════════════════════
@@ -1142,65 +1155,161 @@ async function applyAll(){
 window._tc={bg1:'#FF3251',bg2:'#7C3AED',text:'#FFFFFF',accent:'#FFB547'};
 
 function drawThumb(text,colors,title,bgUrl){
-  var cv=$('thumb-canvas');cv.width=1280;cv.height=720;
+  var cv=$('thumb-canvas');
+  if(!cv) return '';
+  cv.width=1280;cv.height=720;
   var c=cv.getContext('2d');
+
   function render(bg){
+    c.clearRect(0,0,1280,720);
+
     if(bg){
+      // Draw actual video as background
       c.drawImage(bg,0,0,1280,720);
-      var ov=c.createLinearGradient(0,0,1280,0);
-      ov.addColorStop(0,'rgba(0,0,0,.85)');
-      ov.addColorStop(0.5,'rgba(0,0,0,.5)');
-      ov.addColorStop(1,'rgba(0,0,0,.1)');
-      c.fillStyle=ov;c.fillRect(0,0,1280,720);
+      // Dark cinematic overlay - stronger on left for text
+      var grad=c.createLinearGradient(0,0,1280,0);
+      grad.addColorStop(0,'rgba(0,0,0,.88)');
+      grad.addColorStop(0.45,'rgba(0,0,0,.65)');
+      grad.addColorStop(0.75,'rgba(0,0,0,.3)');
+      grad.addColorStop(1,'rgba(0,0,0,.1)');
+      c.fillStyle=grad;c.fillRect(0,0,1280,720);
+      // Bottom vignette
+      var bot=c.createLinearGradient(0,500,0,720);
+      bot.addColorStop(0,'rgba(0,0,0,0)');
+      bot.addColorStop(1,'rgba(0,0,0,.8)');
+      c.fillStyle=bot;c.fillRect(0,0,1280,720);
     } else {
-      var g=c.createLinearGradient(0,0,1280,720);
-      g.addColorStop(0,colors.bg1||'#FF2D55');
-      g.addColorStop(1,colors.bg2||'#0a0a1a');
-      c.fillStyle=g;c.fillRect(0,0,1280,720);
-      var ov2=c.createLinearGradient(0,0,800,0);
-      ov2.addColorStop(0,'rgba(0,0,0,.7)');
-      ov2.addColorStop(1,'rgba(0,0,0,0)');
-      c.fillStyle=ov2;c.fillRect(0,0,1280,720);
+      // Fallback: cinematic gradient
+      var bg2=c.createLinearGradient(0,0,1280,720);
+      bg2.addColorStop(0,colors.bg2||'#0a0a1a');
+      bg2.addColorStop(0.5,'#1a0a2e');
+      bg2.addColorStop(1,colors.bg1||'#FF2D55');
+      c.fillStyle=bg2;c.fillRect(0,0,1280,720);
+      // Radial glow top-left
+      var glow=c.createRadialGradient(200,200,0,200,200,500);
+      glow.addColorStop(0,'rgba(167,139,250,.25)');
+      glow.addColorStop(1,'rgba(0,0,0,0)');
+      c.fillStyle=glow;c.fillRect(0,0,1280,720);
     }
-    var bar=c.createLinearGradient(0,0,0,720);
-    bar.addColorStop(0,colors.accent||'#FFD700');
-    bar.addColorStop(1,colors.bg1||'#FF2D55');
-    c.fillStyle=bar;c.fillRect(0,0,14,720);
-    c.font='bold 96px Impact,"Arial Black",sans-serif';
-    c.textBaseline='middle';
-    var words=(text||'WATCH NOW').toUpperCase().split(' ');
-    var lines=[],line='';
-    for(var i=0;i<words.length;i++){
-      var test=line+(line?' ':'')+words[i];
-      if(c.measureText(test).width>680){if(line)lines.push(line);line=words[i];}
-      else line=test;
+
+    // LEFT ACCENT BAR
+    var barGrad=c.createLinearGradient(0,0,0,720);
+    barGrad.addColorStop(0,colors.accent||'#FFD700');
+    barGrad.addColorStop(0.5,colors.bg1||'#FF2D55');
+    barGrad.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=barGrad;c.fillRect(0,0,8,720);
+
+    // MAIN TEXT - word wrap at max width 620px
+    var rawText=(text||'WATCH NOW').toUpperCase();
+    c.font='bold 108px Impact,"Arial Black",sans-serif';
+    var maxW=660;
+    var wds=rawText.split(' ');
+    var lines=[],cur='';
+    for(var i=0;i<wds.length;i++){
+      var test=cur+(cur?' ':'')+wds[i];
+      if(c.measureText(test).width>maxW){
+        if(cur) lines.push(cur);
+        cur=wds[i];
+      } else cur=test;
     }
-    if(line)lines.push(line);
-    var lh=118,sy=360-(lines.length-1)*lh/2;
+    if(cur) lines.push(cur);
+    // Max 3 lines
+    if(lines.length>3) lines=lines.slice(0,3);
+
+    var lh=124;
+    var totalH=lines.length*lh;
+    var startY=360-totalH/2+lh/2;
+
     for(var j=0;j<lines.length;j++){
-      c.fillStyle='rgba(0,0,0,.6)';c.fillText(lines[j],54,sy+j*lh+6);
-      var tg=c.createLinearGradient(0,sy+j*lh-50,0,sy+j*lh+50);
-      tg.addColorStop(0,'#FFFFFF');
-      tg.addColorStop(1,colors.accent||'#FFD700');
-      c.fillStyle=tg;c.fillText(lines[j],50,sy+j*lh);
+      var y=startY+j*lh;
+      var lw=c.measureText(lines[j]).width;
+
+      // PILL BACKGROUND behind text
+      var pillH=lh*0.82;
+      var pillY=y-pillH*0.58;
+      c.save();
+      c.globalAlpha=0.45;
+      c.fillStyle='#000';
+      roundRect(c,38,pillY,lw+28,pillH,10);
+      c.fill();
+      c.restore();
+
+      // TEXT SHADOW
+      c.fillStyle='rgba(0,0,0,.7)';
+      c.fillText(lines[j],56,y+5);
+
+      // MAIN TEXT GRADIENT
+      var tgrad=c.createLinearGradient(50,y-60,50,y+60);
+      tgrad.addColorStop(0,'#FFFFFF');
+      tgrad.addColorStop(0.6,'#F0F0F0');
+      tgrad.addColorStop(1,colors.accent||'#FFD700');
+      c.fillStyle=tgrad;
+      c.fillText(lines[j],52,y);
     }
-    var bot=c.createLinearGradient(0,0,900,0);
-    bot.addColorStop(0,colors.accent||'#FFD700');
-    bot.addColorStop(1,'transparent');
-    c.fillStyle=bot;c.fillRect(0,698,900,22);
+
+    // ACCENT LINE under text
+    var accentY=startY+lines.length*lh+10;
+    var agrad=c.createLinearGradient(52,0,52+400,0);
+    agrad.addColorStop(0,colors.accent||'#FFD700');
+    agrad.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=agrad;
+    c.fillRect(52,accentY,400,4);
+
+    // VIDEO TITLE at bottom
     if(title){
-      c.font='600 28px Arial,sans-serif';
-      c.fillStyle='rgba(255,255,255,.8)';
-      c.fillText(title.substring(0,62)+(title.length>62?'...':''),50,668);
+      // Bottom bar
+      var btmGrad=c.createLinearGradient(0,670,0,720);
+      btmGrad.addColorStop(0,'rgba(0,0,0,0)');
+      btmGrad.addColorStop(1,'rgba(0,0,0,.75)');
+      c.fillStyle=btmGrad;c.fillRect(0,670,1280,50);
+      // Title text
+      c.font='500 26px "DM Sans",Arial,sans-serif';
+      c.fillStyle='rgba(255,255,255,.85)';
+      var shortTitle=title.length>70?title.substring(0,68)+'...':title;
+      c.fillText(shortTitle,52,706);
     }
+
+    // TOP-RIGHT BADGE "AI OPTIMIZED"
+    c.save();
+    c.globalAlpha=0.9;
+    var badgeX=1150,badgeY=30;
+    c.fillStyle=colors.accent||'#FFD700';
+    roundRect(c,badgeX-90,badgeY,140,34,17);
+    c.fill();
+    c.globalAlpha=1;
+    c.font='bold 13px "DM Sans",Arial,sans-serif';
+    c.fillStyle='#000';
+    c.textBaseline='middle';
+    c.fillText('AI OPTIMIZED',badgeX-83,badgeY+17);
+    c.restore();
   }
+
+  function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.lineTo(x+w-r,y);
+    ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r);
+    ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.closePath();
+  }
+
   if(bgUrl){
     var img=new Image();
     img.setAttribute('crossOrigin','anonymous');
-    img.onload=function(){render(img);var p=$('tb-img');if(p)p.src=cv.toDataURL('image/jpeg',.93);};
-    img.onerror=function(){render(null);};
-    img.src='https://images.weserv.nl/?url='+encodeURIComponent(bgUrl)+'&w=1280&h=720&fit=cover';
-    render(null);
+    img.onload=function(){
+      render(img);
+      var p=$('tb-img');
+      if(p) p.src=cv.toDataURL('image/jpeg',.93);
+    };
+    img.onerror=function(){ render(null); };
+    // Use weserv proxy to avoid CORS
+    img.src='https://wsrv.nl/?url='+encodeURIComponent(bgUrl)+'&w=1280&h=720&fit=cover&output=jpg';
+    render(null); // show placeholder immediately
   } else {
     render(null);
   }
@@ -1218,8 +1327,10 @@ async function dataUrlToBlob(d){
 
 function genThumbStudio(){
   const a=S.analysisCache[S.selectedVideo?.id];if(!a) return;
-  window._tc={...a.thumbnailColors||{bg1:'#FF3251',bg2:'#7C3AED',text:'#FFFFFF',accent:'#FFB547'}};
-  const url=drawThumb(a.thumbnailText||'WATCH THIS',window._tc,S.selectedVideo.snippet.title);
+  window._tc={...a.thumbnailColors||{bg1:'#FF2D55',bg2:'#0a0a1a',text:'#FFFFFF',accent:'#FFD700'}};
+  const sn=S.selectedVideo.snippet;
+  window._vthUrl=sn.thumbnails?.maxres?.url||sn.thumbnails?.high?.url||sn.thumbnails?.medium?.url||null;
+  const url=drawThumb(a.thumbnailText||'WATCH THIS',window._tc,sn.title,window._vthUrl);
   const area=$('tb-prev-area');
   area.innerHTML=`
     <img src="${url}" id="tb-img" style="width:100%;border-radius:9px;margin-bottom:10px">
@@ -1246,7 +1357,12 @@ function previewThumb(){
 }
 
 async function applyThumb(){
-  const url=drawThumb($('tb-txt')?.value||'WATCH THIS',window._tc,S.selectedVideo?.snippet?.title);
+  const sn=S.selectedVideo&&S.selectedVideo.snippet;
+  const bgUrl=window._vthUrl||(sn&&(sn.thumbnails?.maxres?.url||sn.thumbnails?.high?.url||sn.thumbnails?.medium?.url))||null;
+  // Wait for image to load first
+  await new Promise(function(res){setTimeout(res,1200);});
+  const cv=$('thumb-canvas');
+  const url=cv?cv.toDataURL('image/jpeg',.93):drawThumb($('tb-txt')?.value||'WATCH THIS',window._tc,sn&&sn.title||'',bgUrl);
   const btn=$('apply-tb-btn');btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:14px;height:14px"></div> Uploading...';
   try{
     const blob=await dataUrlToBlob(url);
