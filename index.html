@@ -891,59 +891,311 @@ async function generateReply(){
 function copyScript(){if(window._lastScript&&navigator.clipboard)navigator.clipboard.writeText(window._lastScript).then(()=>toast('Copied!','success'));}
 function downloadScript(){if(!window._lastScript)return;var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([window._lastScript],{type:'text/plain'}));a.download='vidflow-script.txt';a.click();toast('Downloaded!','success');}
 
-/* ══ VOICE STUDIO ══ */
-var VOICES=[
-  {id:'mad-scientist',name:'Mad Scientist',emoji:'🧪',desc:'Eccentric genius, dramatic',rate:.85,pitch:1.4,vol:1,color:'#A78BFA'},
-  {id:'adam',name:'Adam',emoji:'👨',desc:'Deep, calm, authoritative',rate:.9,pitch:.7,vol:1,color:'#22D3EE'},
-  {id:'chinese-excited',name:'Li Wei - Excited',emoji:'🇨🇳',desc:'Super joyful, fast!',rate:1.45,pitch:1.65,vol:1,color:'#FF2D55'},
-  {id:'news-anchor',name:'News Anchor',emoji:'📺',desc:'Professional broadcast',rate:.95,pitch:.9,vol:1,color:'#F59E0B'},
-  {id:'robot',name:'Robot X-9',emoji:'🤖',desc:'Mechanical, monotone AI',rate:.78,pitch:.5,vol:.9,color:'#34D399'},
-  {id:'old-wizard',name:'Old Wizard',emoji:'🧙',desc:'Ancient, mysterious, wise',rate:.68,pitch:.62,vol:.85,color:'#8B5CF6'},
-  {id:'pirate',name:'Capt. Blackbeard',emoji:'🏴‍☠️',desc:'Gruff pirate with attitude',rate:.88,pitch:.75,vol:1,color:'#F97316'},
-  {id:'narrator',name:'Epic Narrator',emoji:'🎬',desc:'Movie trailer deep voice',rate:.72,pitch:.52,vol:1,color:'#EF4444'},
-  {id:'teacher',name:'Professor',emoji:'👨‍🏫',desc:'Patient, clear, educational',rate:.85,pitch:.85,vol:.9,color:'#06B6D4'},
-  {id:'villain',name:'Dark Villain',emoji:'😈',desc:'Sinister, slow, menacing',rate:.68,pitch:.58,vol:.95,color:'#7C3AED'},
-  {id:'superhero',name:'Superhero',emoji:'🦸',desc:'Confident, heroic, strong',rate:.9,pitch:.8,vol:1,color:'#FFD60A'},
-  {id:'ghost',name:'Ghost',emoji:'👻',desc:'Hollow, ethereal, haunting',rate:.72,pitch:1.3,vol:.65,color:'#CBD5E1'},
-  {id:'kid',name:'Excited Kid',emoji:'🧒',desc:'High energy, fast, playful',rate:1.35,pitch:1.85,vol:1,color:'#FB923C'},
-  {id:'wise-elder',name:'Wise Elder',emoji:'👴',desc:'Slow, thoughtful, profound',rate:.62,pitch:.68,vol:.85,color:'#84CC16'},
-  {id:'sports',name:'Sports Caster',emoji:'⚽',desc:'Fast, exciting, intense!',rate:1.42,pitch:1.1,vol:1,color:'#3B82F6'},
-  {id:'meditation',name:'Meditation Guide',emoji:'🧘',desc:'Ultra calm, peaceful',rate:.58,pitch:.78,vol:.72,color:'#A78BFA'},
-  {id:'army',name:'Army Commander',emoji:'🪖',desc:'Sharp, commanding, direct',rate:.85,pitch:.65,vol:1,color:'#65A30D'},
-  {id:'witch',name:'Dark Witch',emoji:'🧙‍♀️',desc:'Cackling, mystical, eerie',rate:.78,pitch:1.22,vol:.9,color:'#D946EF'},
-  {id:'comedian',name:'Stand-up Comic',emoji:'😂',desc:'Punchy timing, witty',rate:1.12,pitch:1.0,vol:1,color:'#F59E0B'},
-  {id:'detective',name:'Noir Detective',emoji:'🕵️',desc:'Raspy, slow, mysterious',rate:.72,pitch:.62,vol:.85,color:'#64748B'},
-  {id:'anime-hero',name:'Anime Hero',emoji:'⚔️',desc:'Passionate, intense!',rate:1.02,pitch:1.12,vol:1,color:'#FF6B35'},
-  {id:'alien',name:'Space Alien',emoji:'👽',desc:'Robotic mix, strange',rate:.88,pitch:1.52,vol:.9,color:'#4ADE80'},
-  {id:'auctioneer',name:'Auctioneer',emoji:'🔨',desc:'Ultra fast, rapid fire!',rate:1.85,pitch:.9,vol:1,color:'#F43F5E'},
-  {id:'hypnotist',name:'Hypnotist',emoji:'🌀',desc:'Slow, mesmerizing...',rate:.58,pitch:.72,vol:.78,color:'#818CF8'},
-  {id:'queen',name:'Royal Queen',emoji:'👑',desc:'Regal, proper, commanding',rate:.78,pitch:1.05,vol:.9,color:'#FCD34D'},
-  {id:'surfer',name:'Surfer Dude',emoji:'🏄',desc:'Super chill, relaxed',rate:.88,pitch:1.0,vol:.9,color:'#38BDF8'},
-  {id:'drill-sergeant',name:'Drill Sergeant',emoji:'💪',desc:'LOUD, aggressive!',rate:1.02,pitch:.68,vol:1,color:'#4B5563'},
-  {id:'baby',name:'Baby Voice',emoji:'👶',desc:'Innocent, cute, high',rate:.82,pitch:2.0,vol:.82,color:'#FDA4AF'},
-  {id:'storyteller',name:'Storyteller',emoji:'📖',desc:'Warm, engaging, expressive',rate:.82,pitch:.88,vol:.95,color:'#D97706'},
-  {id:'weatherman',name:'Weatherman',emoji:'⛅',desc:'Cheerful, upbeat, clear',rate:1.0,pitch:1.0,vol:1,color:'#60A5FA'}
+/* ══ VOICE STUDIO — FIXED v2.0 ══
+   - Smart voice matching by name hints + gender + language
+   - 30 unique characters with BEST matching browser voices
+   - Async voice loading with onvoiceschanged
+   - Real-time voice name display on each card
+   - Test button + voice list explorer
+════════════════════════════════════════════════════════ */
+
+/* ── 30 CHARACTERS with smart voice hints ── */
+var VOICES = [
+  // id, name, emoji, desc, rate, pitch, vol, color, gender, lang, voiceHints[], sample
+  {id:'adam',          name:'Adam',             emoji:'👨',   desc:'Deep & Calm Authoritative',    rate:.88, pitch:.62, vol:1,   color:'#22D3EE', gender:'male',   lang:'en-US', voiceHints:['Alex','Google UK English Male','Daniel','David','Mark'],          sample:'I speak with deep authority and calm confidence.'},
+  {id:'narrator',      name:'Epic Narrator',    emoji:'🎬',   desc:'Cinematic Movie Trailer Voice', rate:.70, pitch:.50, vol:1,   color:'#EF4444', gender:'male',   lang:'en-GB', voiceHints:['Google UK English Male','Daniel','Alex','David'],                  sample:'In a world... where voices matter. This summer.'},
+  {id:'villain',       name:'Dark Villain',     emoji:'😈',   desc:'Sinister & Slow Menacing',      rate:.65, pitch:.52, vol:.95, color:'#7C3AED', gender:'male',   lang:'en-GB', voiceHints:['Google UK English Male','Daniel','Alex','David'],                  sample:'You foolish creature... your end is near. Muahahaha.'},
+  {id:'old-wizard',    name:'Old Wizard',       emoji:'🧙',   desc:'Ancient Mysterious Wise',       rate:.60, pitch:.60, vol:.82, color:'#8B5CF6', gender:'male',   lang:'en-GB', voiceHints:['Google UK English Male','Daniel','Alex','David'],                  sample:'Long ago, in ancient times, there was great magic...'},
+  {id:'detective',     name:'Noir Detective',   emoji:'🕵️',  desc:'Raspy Slow Mysterious',         rate:.70, pitch:.60, vol:.82, color:'#64748B', gender:'male',   lang:'en-GB', voiceHints:['Google UK English Male','Daniel','Alex','David'],                  sample:"It was a dark rainy night. Something didn't add up."},
+  {id:'hypnotist',     name:'Hypnotist',        emoji:'🌀',   desc:'Slow Mesmerizing Deep',         rate:.55, pitch:.70, vol:.75, color:'#818CF8', gender:'male',   lang:'en-GB', voiceHints:['Google UK English Male','Daniel','Alex'],                          sample:'You are getting very sleepy... your eyes are heavy...'},
+  {id:'wise-elder',    name:'Wise Elder',       emoji:'👴',   desc:'Slow Thoughtful Profound',      rate:.58, pitch:.65, vol:.82, color:'#84CC16', gender:'male',   lang:'en-US', voiceHints:['Alex','David','Google US English','Mark','Daniel'],               sample:'Patience, young one. Wisdom comes not from haste.'},
+  {id:'pirate',        name:'Capt. Blackbeard', emoji:'🏴‍☠️',desc:'Gruff Pirate Attitude',         rate:.85, pitch:.72, vol:1,   color:'#F97316', gender:'male',   lang:'en-GB', voiceHints:['Google UK English Male','Daniel','Rishi','Alex'],                 sample:'Arrr! Ye dare challenge me on me own ship? Walk the plank!'},
+  {id:'army',          name:'Army Commander',   emoji:'🪖',   desc:'Sharp Commanding Direct',       rate:.88, pitch:.62, vol:1,   color:'#65A30D', gender:'male',   lang:'en-US', voiceHints:['David','Alex','Google US English','Mark'],                        sample:'ATTENTION SOLDIERS! Move out NOW! No excuses, no delays!'},
+  {id:'drill-sergeant',name:'Drill Sergeant',   emoji:'💪',   desc:'LOUD Aggressive Intense',       rate:1.05,pitch:.65, vol:1,   color:'#4B5563', gender:'male',   lang:'en-US', voiceHints:['David','Alex','Google US English','Mark'],                        sample:'DROP AND GIVE ME TWENTY! MOVE IT MOVE IT MOVE IT!'},
+  {id:'news-anchor',   name:'News Anchor',      emoji:'📺',   desc:'Professional Broadcast Clear',  rate:.95, pitch:.88, vol:1,   color:'#F59E0B', gender:'male',   lang:'en-US', voiceHints:['David','Google US English','Mark','Alex'],                        sample:'Good evening. In breaking news tonight, sources confirm...'},
+  {id:'teacher',       name:'Professor',        emoji:'👨‍🏫', desc:'Patient Clear Educational',     rate:.85, pitch:.85, vol:.9,  color:'#06B6D4', gender:'male',   lang:'en-US', voiceHints:['David','Google US English','Alex','Mark'],                        sample:"Today we'll learn something fascinating. Pay attention class."},
+  {id:'superhero',     name:'Superhero',        emoji:'🦸',   desc:'Confident Heroic Strong',       rate:.90, pitch:.80, vol:1,   color:'#FFD60A', gender:'male',   lang:'en-US', voiceHints:['Alex','David','Google US English'],                               sample:'I will protect this city! No villain shall pass while I stand!'},
+  {id:'comedian',      name:'Stand-up Comic',   emoji:'😂',   desc:'Punchy Timing Witty',           rate:1.15,pitch:1.02,vol:1,   color:'#F59E0B', gender:'male',   lang:'en-US', voiceHints:['Alex','David','Google US English'],                               sample:"So I walked into a coffee shop and said... what's your WiFi password?"},
+  {id:'surfer',        name:'Surfer Dude',      emoji:'🏄',   desc:'Chill Relaxed Cool',            rate:.90, pitch:1.02,vol:.9,  color:'#38BDF8', gender:'male',   lang:'en-US', voiceHints:['Alex','David','Google US English','Mark'],                        sample:"Dude, the waves today were like... totally gnarly bro. So rad!"},
+  {id:'auctioneer',    name:'Auctioneer',       emoji:'🔨',   desc:'Ultra Fast Rapid Fire!',        rate:1.90,pitch:.92, vol:1,   color:'#F43F5E', gender:'male',   lang:'en-US', voiceHints:['David','Alex','Google US English','Mark'],                        sample:'WehavetenWehavetwentyWehavefortyDoyouhavefiftyFIFTYGOINGONCE!'},
+  {id:'sports',        name:'Sports Caster',    emoji:'⚽',   desc:'Fast Exciting Intense!',        rate:1.45,pitch:1.05,vol:1,   color:'#3B82F6', gender:'male',   lang:'en-US', voiceHints:['David','Google US English','Alex','Mark'],                        sample:"AND HE SHOOTS! HE SCORES! UNBELIEVABLE! THE CROWD GOES WILD!"},
+  {id:'anime-hero',    name:'Anime Hero',       emoji:'⚔️',   desc:'Passionate Intense Dramatic',   rate:1.05,pitch:1.12,vol:1,   color:'#FF6B35', gender:'male',   lang:'en-US', voiceHints:['David','Alex','Google US English'],                               sample:'I will surpass my limits! This power inside me is awakening!'},
+  {id:'weatherman',    name:'Weatherman',       emoji:'⛅',   desc:'Cheerful Upbeat Clear',         rate:1.02,pitch:1.0, vol:1,   color:'#60A5FA', gender:'male',   lang:'en-US', voiceHints:['David','Google US English','Mark','Alex'],                        sample:"Good morning! Today we're looking at partly cloudy skies with highs of 75!"},
+  {id:'mad-scientist', name:'Mad Scientist',    emoji:'🧪',   desc:'Eccentric Genius Dramatic',     rate:.82, pitch:1.45,vol:1,   color:'#A78BFA', gender:'male',   lang:'en-GB', voiceHints:['Daniel','Google UK English Male','Alex','David'],                 sample:"It's ALIVE! My formula works! Muahahaha! The experiment is a success!"},
+  {id:'robot',         name:'Robot X-9',        emoji:'🤖',   desc:'Mechanical Monotone AI',        rate:.72, pitch:.45, vol:.9,  color:'#34D399', gender:'male',   lang:'en-US', voiceHints:['Alex','David','Mark','Google US English'],                        sample:'PROCESSING... DIRECTIVE RECEIVED... INITIATING RESPONSE PROTOCOL...'},
+  {id:'alien',         name:'Space Alien',      emoji:'👽',   desc:'Robotic Strange Otherworldly',  rate:.85, pitch:1.55,vol:.9,  color:'#4ADE80', gender:'male',   lang:'en-US', voiceHints:['Alex','Google US English','David'],                               sample:'We come from galaxy 7. Your planet broadcasts strange signals.'},
+  {id:'queen',         name:'Royal Queen',      emoji:'👑',   desc:'Regal Proper Commanding',       rate:.78, pitch:1.05,vol:.9,  color:'#FCD34D', gender:'female', lang:'en-GB', voiceHints:['Google UK English Female','Kate','Serena','Karen','Veena'],         sample:"We are most displeased. Ensure this never happens in our kingdom again."},
+  {id:'meditation',    name:'Meditation Guide', emoji:'🧘',   desc:'Ultra Calm Peaceful Soft',      rate:.55, pitch:.80, vol:.70, color:'#A78BFA', gender:'female', lang:'en-US', voiceHints:['Samantha','Karen','Google US English','Zira','Moira'],             sample:'Breathe in... and breathe out... feel yourself relax completely...'},
+  {id:'witch',         name:'Dark Witch',       emoji:'🧙‍♀️',desc:'Cackling Mystical Eerie',       rate:.75, pitch:1.25,vol:.88, color:'#D946EF', gender:'female', lang:'en-US', voiceHints:['Victoria','Moira','Tessa','Zira','Google US English'],             sample:'Double double toil and trouble... your fate is sealed my pretty!'},
+  {id:'ghost',         name:'Ghost',            emoji:'👻',   desc:'Hollow Ethereal Haunting',      rate:.68, pitch:1.35,vol:.60, color:'#CBD5E1', gender:'female', lang:'en-US', voiceHints:['Zira','Victoria','Google US English','Samantha'],                  sample:'Can you hear meee...? I have been trapped here for centuries...'},
+  {id:'kid',           name:'Excited Kid',      emoji:'🧒',   desc:'High Energy Fast Playful',      rate:1.40,pitch:1.90,vol:1,   color:'#FB923C', gender:'female', lang:'en-US', voiceHints:['Zira','Samantha','Google US English','Victoria'],                  sample:"OH WOW! This is so cool! Can we do it AGAIN? Pleeeease?!"},
+  {id:'baby',          name:'Baby Voice',       emoji:'👶',   desc:'Innocent Cute High Pitch',      rate:.78, pitch:2.0, vol:.80, color:'#FDA4AF', gender:'female', lang:'en-US', voiceHints:['Samantha','Zira','Victoria','Google US English'],                  sample:'Mama! Dada! Look at me! I want cookie! No no no...'},
+  {id:'storyteller',   name:'Storyteller',      emoji:'📖',   desc:'Warm Engaging Expressive',      rate:.82, pitch:.90, vol:.95, color:'#D97706', gender:'female', lang:'en-US', voiceHints:['Samantha','Karen','Google US English','Zira'],                     sample:"Once upon a time, in a land far away, a young girl discovered magic..."},
+  {id:'chinese-excited',name:'Li Wei - Excited',emoji:'🇨🇳', desc:'Joyful Fast Enthusiastic!',     rate:1.40,pitch:1.60,vol:1,   color:'#FF2D55', gender:'female', lang:'zh-CN', voiceHints:['Ting-Ting','Mei-Jia','Tian','Lili','Sin-ji','Google 普通话','Sinji'], sample:'你好！这个太棒了！I love it so much! Wow amazing!'}
 ];
-var _synth=window.speechSynthesis;
-function renderVoicesTab(){
-  $('pg-body').innerHTML='<div style="padding:24px;max-width:1100px;margin:0 auto"><div style="background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(255,45,85,.06));border:1px solid rgba(167,139,250,.2);border-radius:18px;padding:22px;margin-bottom:24px"><div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px">🎙️ Type text, click any character to hear their voice!</div><textarea class="tarea" id="voice-text" style="min-height:70px;font-size:14px;margin-bottom:12px" placeholder="Write something... Assalam o Alaikum! Yeh meri awaaz hai!"></textarea><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="stopVoice()">⏹ Stop All</button><span style="font-size:12px;color:var(--t3)">30 unique characters</span><div id="now-playing" style="margin-left:auto;font-size:13px;color:var(--green);font-weight:700;display:none">▶ <span id="np-name"></span></div></div></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px" id="voices-grid"></div></div>';
+
+var _synth = window.speechSynthesis;
+var _voicesLoaded = false;
+var _voiceMap = {}; // cache: character id → best matching SpeechSynthesisVoice
+
+/* ── Smart voice finder: searches by name hints, then gender, then language ── */
+function findBestVoice(hints, gender, lang) {
+  var all = _synth.getVoices();
+  if (!all.length) return null;
+
+  var female = ['female','woman','zira','samantha','victoria','karen','moira','tessa','veena','kate','serena','rosa','google uk english female','google us english'];
+  var male   = ['male','man','david','alex','mark','daniel','rishi','tom','fred','ralph','bruce','fred'];
+
+  // 1. Exact/partial name match from hints list
+  for (var hi = 0; hi < hints.length; hi++) {
+    var h = hints[hi].toLowerCase();
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].name.toLowerCase().indexOf(h) >= 0) return all[i];
+    }
+  }
+
+  // 2. Language match + gender guess
+  var langRoot = lang.split('-')[0];
+  var langVoices = all.filter(function(v) { return v.lang.startsWith(langRoot); });
+  var pool = langVoices.length ? langVoices : all.filter(function(v) { return v.lang.startsWith('en'); });
+  if (!pool.length) pool = all;
+
+  if (gender === 'female') {
+    var fv = pool.find(function(v) { return female.some(function(k) { return v.name.toLowerCase().indexOf(k) >= 0; }); });
+    if (fv) return fv;
+  } else {
+    var mv = pool.find(function(v) { return male.some(function(k) { return v.name.toLowerCase().indexOf(k) >= 0; }); });
+    if (mv) return mv;
+  }
+
+  // 3. Any voice in that language
+  if (langVoices.length) return langVoices[0];
+
+  // 4. Absolute fallback
+  return all.find(function(v) { return v.lang.startsWith('en'); }) || all[0] || null;
+}
+
+/* ── Build voice cache for all 30 characters ── */
+function buildVoiceCache() {
+  _voiceMap = {};
+  VOICES.forEach(function(v) {
+    _voiceMap[v.id] = findBestVoice(v.voiceHints, v.gender, v.lang);
+  });
+  _voicesLoaded = true;
+  // Update UI cards if already rendered
+  VOICES.forEach(function(v) {
+    var lbl = document.getElementById('vlbl-' + v.id);
+    var vc  = _voiceMap[v.id];
+    if (lbl) {
+      lbl.textContent = vc ? ('🔊 ' + vc.name.replace('Google ','').replace('Microsoft ','').substring(0, 22)) : '⚠️ No voice found';
+      lbl.style.color = vc ? 'var(--green)' : 'var(--red)';
+    }
+  });
+}
+
+/* ── Voices load asynchronously in browsers ── */
+if (_synth.onvoiceschanged !== undefined) {
+  _synth.onvoiceschanged = buildVoiceCache;
+}
+// Also try immediate load (some browsers populate synchronously)
+setTimeout(buildVoiceCache, 200);
+
+/* ── RENDER VOICE STUDIO TAB ── */
+function renderVoicesTab() {
+  $('pg-actions').innerHTML = '<div style="display:flex;gap:8px;align-items:center">' +
+    '<button class="btn btn-ghost btn-sm" onclick="showAllVoices()">📋 All Voices</button>' +
+    '<button class="btn btn-ghost btn-sm" onclick="stopVoice()">⏹ Stop</button>' +
+  '</div>';
+
+  $('pg-body').innerHTML =
+    '<div style="padding:24px;max-width:1200px;margin:0 auto">' +
+
+    // Text input area
+    '<div style="background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(255,45,85,.06));border:1px solid rgba(167,139,250,.25);border-radius:20px;padding:24px;margin-bottom:28px">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">' +
+        '<div style="font-size:22px">🎙️</div>' +
+        '<div><div style="font-size:15px;font-weight:700;color:var(--text)">Voice Studio — 30 Unique Characters</div>' +
+        '<div style="font-size:12px;color:var(--t3)">Type anything below then click a character to hear them speak</div></div>' +
+        '<div id="now-playing" style="margin-left:auto;display:none;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);border-radius:50px;padding:6px 14px;font-size:12px;color:var(--green);font-weight:700;display:none">▶ <span id="np-name"></span></div>' +
+      '</div>' +
+      '<textarea class="tarea" id="voice-text" style="min-height:80px;font-size:14px;margin-bottom:14px;border-color:rgba(167,139,250,.3)" placeholder="Apna text yahan likhein... e.g. Assalam o Alaikum! Yeh meri awaaz hai. Main aaj aapko kuch batana chahta hoon."></textarea>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">' +
+        '<select class="inp" id="voice-lang-filter" style="width:160px;padding:8px 12px;font-size:13px" onchange="filterVoiceCards()">' +
+          '<option value="all">🌍 All Characters</option>' +
+          '<option value="male">👨 Male Voices</option>' +
+          '<option value="female">👩 Female Voices</option>' +
+          '<option value="deep">🔽 Deep & Low</option>' +
+          '<option value="high">🔼 High & Fast</option>' +
+        '</select>' +
+        '<button class="btn btn-ghost btn-sm" onclick="stopVoice()">⏹ Stop All</button>' +
+        '<span style="font-size:11px;color:var(--t3);margin-left:auto" id="voice-count-label">Loading voices...</span>' +
+      '</div>' +
+    '</div>' +
+
+    // Voice grid
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px" id="voices-grid"></div>' +
+
+    // Voice list modal (hidden)
+    '<div id="voice-list-modal" style="display:none;margin-top:20px">' +
+      '<div class="card" style="padding:20px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">' +
+          '<div style="font-size:14px;font-weight:700;color:var(--text)">📋 Available Browser Voices</div>' +
+          '<button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'voice-list-modal\').style.display=\'none\'">✕ Close</button>' +
+        '</div>' +
+        '<div id="voice-list-content" style="max-height:300px;overflow-y:auto;font-size:12px;color:var(--t2)"></div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
   buildVoiceCards();
+  // Rebuild cache so labels update
+  setTimeout(function() {
+    buildVoiceCache();
+    var lbl = $('voice-count-label');
+    var vcnt = _synth.getVoices().length;
+    if (lbl) lbl.textContent = vcnt + ' browser voices available';
+  }, 300);
 }
-function buildVoiceCards(){
-  var g=$('voices-grid');if(!g) return;
-  g.innerHTML=VOICES.map(v=>`<div class="voice-card" id="vc-${v.id}" onclick="playVoice('${v.id}')"><div class="voice-avatar" style="background:${v.color}20;border-color:${v.color}44">${v.emoji}</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">${escH(v.name)}</div><div style="font-size:10px;color:var(--t3);line-height:1.4;margin-bottom:8px">${escH(v.desc)}</div><div class="voice-eq" id="eq-${v.id}" style="display:none"><span></span><span></span><span></span><span></span><span></span></div><div id="pb-${v.id}" style="font-size:10px;color:${v.color};font-weight:700;margin-top:4px">▶ PLAY</div></div>`).join('');
+
+/* ── Build character cards ── */
+function buildVoiceCards() {
+  var g = $('voices-grid'); if (!g) return;
+  g.innerHTML = VOICES.map(function(v) {
+    var vc = _voiceMap[v.id];
+    var vname = vc ? vc.name.replace('Google ','').replace('Microsoft ','').substring(0,22) : 'Auto-select';
+    var badgeStyle = vc ? 'color:var(--green)' : 'color:var(--t3)';
+    var genderIcon = v.gender === 'female' ? '♀' : '♂';
+    return '<div class="voice-card" id="vc-' + v.id + '" onclick="playVoice(\'' + v.id + '\')" data-gender="' + v.gender + '" data-pitch="' + v.pitch + '" data-rate="' + v.rate + '">' +
+      '<div class="voice-avatar" style="background:' + v.color + '22;border-color:' + v.color + '55;font-size:28px">' + v.emoji + '</div>' +
+      '<div style="font-size:12px;font-weight:800;color:var(--text);margin-bottom:2px;line-height:1.2">' + escH(v.name) + '</div>' +
+      '<div style="font-size:10px;color:var(--t3);line-height:1.4;margin-bottom:6px;min-height:28px">' + escH(v.desc) + '</div>' +
+      // Voice name label
+      '<div id="vlbl-' + v.id + '" style="font-size:9px;' + badgeStyle + ';margin-bottom:6px;line-height:1.3;min-height:22px;word-break:break-word">🔊 ' + escH(vname) + '</div>' +
+      // Gender + stats chips
+      '<div style="display:flex;gap:3px;justify-content:center;margin-bottom:6px;flex-wrap:wrap">' +
+        '<span style="font-size:9px;background:' + v.color + '18;color:' + v.color + ';border:1px solid ' + v.color + '33;border-radius:20px;padding:1px 6px">' + genderIcon + ' ' + (v.lang.startsWith('zh') ? '🇨🇳' : v.lang.includes('GB') ? '🇬🇧' : '🇺🇸') + '</span>' +
+        '<span style="font-size:9px;background:rgba(255,255,255,.04);color:var(--t3);border:1px solid var(--border);border-radius:20px;padding:1px 5px">⚡' + v.rate + 'x</span>' +
+      '</div>' +
+      // EQ animation
+      '<div class="voice-eq" id="eq-' + v.id + '" style="display:none"><span style="background:' + v.color + '"></span><span style="background:' + v.color + '"></span><span style="background:' + v.color + '"></span><span style="background:' + v.color + '"></span><span style="background:' + v.color + '"></span></div>' +
+      '<div id="pb-' + v.id + '" style="font-size:10px;color:' + v.color + ';font-weight:800;margin-top:4px;letter-spacing:.5px">▶ PLAY</div>' +
+    '</div>';
+  }).join('');
 }
-function playVoice(id){
-  stopVoice();var v=VOICES.find(x=>x.id===id);if(!v) return;
-  var txt=($('voice-text')?.value)||'Hello! I am speaking to you. This is my unique voice!';
-  var utt=new SpeechSynthesisUtterance(txt);utt.rate=v.rate;utt.pitch=v.pitch;utt.volume=v.vol;utt.lang='en-US';
-  var voices=_synth.getVoices();if(voices.length>0){var vi=VOICES.indexOf(v);utt.voice=voices[vi%voices.length];}
+
+/* ── Play voice for a character ── */
+function playVoice(id) {
+  stopVoice();
+  var v = VOICES.find(function(x) { return x.id === id; });
+  if (!v) return;
+
+  // Ensure voices are loaded
+  if (!_voicesLoaded || !_synth.getVoices().length) {
+    buildVoiceCache();
+  }
+
+  var txt = ($('voice-text') && $('voice-text').value) || v.sample || 'Hello! This is my voice. I am speaking to you right now!';
+  var utt = new SpeechSynthesisUtterance(txt);
+  utt.rate   = v.rate;
+  utt.pitch  = v.pitch;
+  utt.volume = v.vol;
+  utt.lang   = v.lang;
+
+  // Assign best matching voice
+  var bestVoice = _voiceMap[id] || findBestVoice(v.voiceHints, v.gender, v.lang);
+  if (bestVoice) {
+    utt.voice = bestVoice;
+    utt.lang  = bestVoice.lang; // use voice's actual lang
+  }
+
   _synth.speak(utt);
-  var card=$('vc-'+id),eq=$('eq-'+id),pb=$('pb-'+id);if(card)card.classList.add('playing');if(eq)eq.style.display='flex';if(pb)pb.textContent='▶ PLAYING';
-  var np=$('now-playing'),nn=$('np-name');if(np)np.style.display='block';if(nn)nn.textContent=v.emoji+' '+v.name;
-  utt.onend=function(){if(card)card.classList.remove('playing');if(eq)eq.style.display='none';if(pb)pb.textContent='▶ PLAY';if(np)np.style.display='none';};
+
+  // UI updates
+  var card = $('vc-' + id), eq = $('eq-' + id), pb = $('pb-' + id);
+  if (card) card.classList.add('playing');
+  if (eq)   eq.style.display = 'flex';
+  if (pb)   pb.textContent = '▶ PLAYING...';
+
+  var np = $('now-playing'), nn = $('np-name');
+  if (np) np.style.display = 'inline-flex';
+  if (nn) nn.textContent = v.emoji + ' ' + v.name + (bestVoice ? ' — ' + bestVoice.name.replace('Google ','').replace('Microsoft ','').substring(0,18) : '');
+
+  utt.onend = function() {
+    if (card) card.classList.remove('playing');
+    if (eq)   eq.style.display = 'none';
+    if (pb)   pb.textContent = '▶ PLAY';
+    if (np)   np.style.display = 'none';
+  };
+  utt.onerror = function(e) {
+    if (card) card.classList.remove('playing');
+    if (eq)   eq.style.display = 'none';
+    if (pb)   pb.textContent = '▶ PLAY';
+    toast('Voice error: ' + (e.error || 'unknown'), 'warn');
+  };
 }
-function stopVoice(){_synth.cancel();document.querySelectorAll('.voice-card').forEach(el=>el.classList.remove('playing'));document.querySelectorAll('.voice-eq').forEach(el=>el.style.display='none');document.querySelectorAll('[id^="pb-"]').forEach(el=>el.textContent='▶ PLAY');var np=$('now-playing');if(np)np.style.display='none';}
+
+/* ── Stop all voices ── */
+function stopVoice() {
+  _synth.cancel();
+  document.querySelectorAll('.voice-card').forEach(function(el) { el.classList.remove('playing'); });
+  document.querySelectorAll('.voice-eq').forEach(function(el) { el.style.display = 'none'; });
+  document.querySelectorAll('[id^="pb-"]').forEach(function(el) { el.textContent = '▶ PLAY'; });
+  var np = $('now-playing'); if (np) np.style.display = 'none';
+}
+
+/* ── Filter voice cards ── */
+function filterVoiceCards() {
+  var filter = ($('voice-lang-filter') && $('voice-lang-filter').value) || 'all';
+  document.querySelectorAll('.voice-card').forEach(function(card) {
+    var show = true;
+    var pitch = parseFloat(card.dataset.pitch || 1);
+    var rate  = parseFloat(card.dataset.rate  || 1);
+    var gender = card.dataset.gender || 'male';
+    if (filter === 'male')   show = gender === 'male';
+    if (filter === 'female') show = gender === 'female';
+    if (filter === 'deep')   show = pitch < 0.8;
+    if (filter === 'high')   show = pitch > 1.1 || rate > 1.2;
+    card.style.display = show ? '' : 'none';
+  });
+}
+
+/* ── Show all available browser voices ── */
+function showAllVoices() {
+  var modal = $('voice-list-modal');
+  if (!modal) return;
+  var all = _synth.getVoices();
+  if (modal.style.display === 'none' || !modal.style.display) {
+    modal.style.display = 'block';
+    var cont = $('voice-list-content');
+    if (cont) {
+      if (!all.length) {
+        cont.innerHTML = '<div style="color:var(--t3);padding:12px">No voices loaded yet. Try clicking a character first.</div>';
+      } else {
+        cont.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px">' +
+          all.map(function(v, i) {
+            return '<div style="padding:7px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;cursor:pointer" onclick="testVoice(\'' + v.name.replace(/'/g, "\\'") + '\')">' +
+              '<div style="font-size:12px;font-weight:600;color:var(--text)">' + escH(v.name) + '</div>' +
+              '<div style="font-size:10px;color:var(--t3);margin-top:2px">' + v.lang + (v.localService ? ' · Local' : ' · Remote') + '</div>' +
+            '</div>';
+          }).join('') + '</div>';
+      }
+    }
+  } else {
+    modal.style.display = 'none';
+  }
+}
+
+/* ── Test a raw voice by name ── */
+function testVoice(name) {
+  _synth.cancel();
+  var all = _synth.getVoices();
+  var v = all.find(function(x) { return x.name === name; });
+  if (!v) { toast('Voice not found', 'warn'); return; }
+  var utt = new SpeechSynthesisUtterance('Hello! This is the ' + name + ' voice. Testing one two three.');
+  utt.voice = v; utt.rate = 1; utt.pitch = 1; utt.volume = 1;
+  _synth.speak(utt);
+  toast('Testing: ' + name, 'info');
+}
 
 /* ══════════════════════════════════════════
    VIDEO PLANNER
