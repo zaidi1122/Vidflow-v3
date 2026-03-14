@@ -2,9 +2,619 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23FF2D55'/%3E%3Cstop offset='100%25' stop-color='%23A78BFA'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Cpolygon points='35,25 35,75 75,50' fill='white'/%3E%3Ccircle cx='72' cy='28' r='12' fill='%23FFD60A'/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VidFlow Pro — YouTube Growth Platform</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<title>VidFlow Pro - YouTube Growth Platform</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+/* ════════════════════════════════════════════════════
+   AI SCRIPT WRITER
+════════════════════════════════════════════════════ */
+function renderScriptTab(){
+  $('pg-body').innerHTML=`
+  <div style="max-width:900px;margin:0 auto;padding:24px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+      <div class="card" style="padding:20px">
+        <div style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text)">✍️ Script Generator</div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Video Topic / Title</label>
+          <input class="inp" id="sc-topic" placeholder="e.g. Noha about Maa Ka Dard, How to make biryani..." style="font-size:13px">
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Video Type</label>
+          <select class="inp" id="sc-type" style="font-size:13px">
+            <option value="educational">📚 Educational / Tutorial</option>
+            <option value="noha">🕌 Noha / Nasheed / Islamic</option>
+            <option value="vlog">🎥 Vlog / Story</option>
+            <option value="comedy">😂 Comedy / Entertainment</option>
+            <option value="review">⭐ Review / Unboxing</option>
+            <option value="motivational">💪 Motivational / Inspirational</option>
+            <option value="news">📰 News / Current Affairs</option>
+            <option value="cooking">🍳 Cooking / Recipe</option>
+          </select>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Video Length</label>
+          <select class="inp" id="sc-len" style="font-size:13px">
+            <option value="short">⚡ Short (1-3 min)</option>
+            <option value="medium" selected>🎬 Medium (5-10 min)</option>
+            <option value="long">📽️ Long (15-20 min)</option>
+          </select>
+        </div>
+        <div style="margin-bottom:16px">
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Tone / Style</label>
+          <select class="inp" id="sc-tone" style="font-size:13px">
+            <option value="emotional">💔 Emotional</option>
+            <option value="professional">👔 Professional</option>
+            <option value="casual">😊 Casual / Friendly</option>
+            <option value="dramatic">🎭 Dramatic</option>
+            <option value="funny">😄 Funny / Humorous</option>
+            <option value="serious">🎯 Serious / Informative</option>
+          </select>
+        </div>
+        <div style="margin-bottom:16px">
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Language</label>
+          <select class="inp" id="sc-lang" style="font-size:13px">
+            <option value="urdu">🇵🇰 Urdu</option>
+            <option value="english">🇺🇸 English</option>
+            <option value="hinglish">🔀 Hinglish (Mix)</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width:100%;padding:14px" id="sc-btn" onclick="generateScript()">
+          🧠 Generate Full Script
+        </button>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text)">⚡ Quick Tools</div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">A/B Title Tester — 5 Viral Titles</label>
+          <input class="inp" id="ab-topic" placeholder="Enter your video topic..." style="font-size:13px;margin-bottom:8px">
+          <button class="btn btn-violet" style="width:100%;padding:11px" id="ab-btn" onclick="generateABTitles()">🎯 Generate 5 Titles</button>
+        </div>
+        <div id="ab-results" style="margin-top:8px"></div>
+        <hr style="border-color:var(--border);margin:16px 0">
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">🔥 Hook Generator (First 5 Seconds)</label>
+          <input class="inp" id="hook-topic" placeholder="Video topic..." style="font-size:13px;margin-bottom:8px">
+          <button class="btn btn-ghost" style="width:100%;padding:11px" onclick="generateHooks()">⚡ Generate 3 Hooks</button>
+        </div>
+        <div id="hook-results" style="margin-top:8px"></div>
+        <hr style="border-color:var(--border);margin:16px 0">
+        <div>
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">💬 Comment Reply Generator</label>
+          <textarea class="tarea" id="comment-in" style="min-height:60px;font-size:12px" placeholder="Paste a comment here..."></textarea>
+          <button class="btn btn-ghost" style="width:100%;padding:11px;margin-top:8px" onclick="generateReply()">💬 Generate Reply</button>
+          <div id="reply-result" style="margin-top:8px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="script-output" style="padding:24px;display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:var(--text)">📜 Generated Script</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="copyScript()">📋 Copy</button>
+          <button class="export-btn" style="padding:8px 16px;font-size:12px" onclick="downloadScript()">⬇️ Download</button>
+        </div>
+      </div>
+      <div id="script-content" style="line-height:1.8;font-size:13px;color:var(--t2);white-space:pre-wrap"></div>
+    </div>
+  </div>`;
+}
+
+async function generateScript(){
+  const topic=$('sc-topic').value.trim();
+  if(!topic){toast('Topic likhein pehle!','warn');return;}
+  const btn=$('sc-btn');
+  btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:16px;height:16px"></div> Writing Script...';
+  const type=$('sc-type').value;
+  const len=$('sc-len').value;
+  const tone=$('sc-tone').value;
+  const lang=$('sc-lang').value;
+  const lenGuide={short:'3 sections, 300 words total',medium:'6 sections, 700 words total',long:'10 sections, 1500 words total'};
+  const parts=[
+    'You are a professional YouTube scriptwriter. Write a complete video script.',
+    'Topic: '+topic,
+    'Video Type: '+type,
+    'Length: '+lenGuide[len],
+    'Tone: '+tone,
+    'Language: '+lang+(lang==='urdu'?' (Roman Urdu is fine)':''),
+    '',
+    'Write the script with these sections clearly labeled:',
+    '[HOOK] - First 5 seconds to grab attention',
+    '[INTRO] - Brief channel intro',
+    '[MAIN CONTENT] - Core sections with timestamps',
+    '[CTA] - Call to action (subscribe, like, comment)',
+    '[OUTRO] - Closing',
+    '',
+    'Make it natural, engaging, and specific to the topic. Include emotion and energy.'
+  ].join('\n');
+  try{
+    const raw=await callClaude(parts,2500);
+    const out=$('script-output');
+    out.style.display='block';
+    $('script-content').textContent=raw;
+    window._lastScript=raw;
+    out.scrollIntoView({behavior:'smooth'});
+    toast('Script ready! ✅','success');
+  }catch(e){toast('Error: '+e.message,'error');}
+  btn.disabled=false;btn.innerHTML='🧠 Generate Full Script';
+}
+
+async function generateABTitles(){
+  const t=$('ab-topic').value.trim();
+  if(!t){toast('Topic likhein!','warn');return;}
+  const btn=$('ab-btn');btn.disabled=true;btn.innerHTML='Generating...';
+  const p='Generate 5 different viral YouTube title options for this topic: "'+t+'".\nMake each title different style: emotional, curiosity, number, question, shocking.\nReturn as numbered list 1-5. Keep each under 70 characters. Be specific and clickable.';
+  try{
+    const raw=await callClaude(p,600);
+    const lines=raw.split('\n').filter(function(l){return l.trim().match(/^[1-5]/);}).slice(0,5);
+    $('ab-results').innerHTML=lines.map(function(l,i){
+      const colors=['var(--red)','var(--violet)','var(--cyan)','var(--green)','var(--gold)'];
+      return '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:6px;cursor:pointer" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.querySelector(\'span\').textContent);toast(\'Copied!\',\'success\')">'
+        +'<span style="color:'+colors[i]+';font-weight:700;font-size:12px;flex-shrink:0">'+(i+1)+'</span>'
+        +'<span style="font-size:12px;color:var(--t2);line-height:1.5">'+escH(l.replace(/^[1-9]\.\s*/,''))+'</span>'
+        +'<span style="font-size:10px;color:var(--t3);flex-shrink:0;margin-left:auto">📋</span>'
+        +'</div>';
+    }).join('');
+    toast('5 titles ready!','success');
+  }catch(e){toast('Error: '+e.message,'error');}
+  btn.disabled=false;btn.innerHTML='🎯 Generate 5 Titles';
+}
+
+async function generateHooks(){
+  const t=$('hook-topic').value.trim();
+  if(!t){toast('Topic likhein!','warn');return;}
+  const p='Write 3 powerful YouTube video hooks (first 5 seconds) for topic: "'+t+'". Each hook should be different style: question/shocking fact/emotional. Number them 1-3. Make them punchy and under 30 words each.';
+  try{
+    const raw=await callClaude(p,400);
+    $('hook-results').innerHTML='<div style="background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.15);border-radius:10px;padding:12px;font-size:12px;color:var(--t2);line-height:1.8;white-space:pre-wrap">'+escH(raw)+'</div>';
+    toast('Hooks ready!','success');
+  }catch(e){toast('Error: '+e.message,'error');}
+}
+
+async function generateReply(){
+  const comment=$('comment-in').value.trim();
+  if(!comment){toast('Comment paste karein!','warn');return;}
+  const p='Write a friendly, engaging YouTube comment reply to this comment: "'+comment+'". Keep it short (2-3 sentences), genuine, and encourage further engagement. Match the language of the comment.';
+  try{
+    const raw=await callClaude(p,300);
+    $('reply-result').innerHTML='<div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:12px;font-size:12px;color:var(--text);cursor:pointer" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent.replace(\'📋 Copy \',\'\'));toast(\'Copied!\',\'success\')">📋 Copy — '+escH(raw)+'</div>';
+  }catch(e){toast('Error: '+e.message,'error');}
+}
+
+function copyScript(){
+  if(window._lastScript) navigator.clipboard&&navigator.clipboard.writeText(window._lastScript).then(function(){toast('Script copied!','success');});
+}
+
+function downloadScript(){
+  if(!window._lastScript) return;
+  const blob=new Blob([window._lastScript],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='vidflow-script.txt';
+  a.click();
+  toast('Script downloaded!','success');
+}
+
+
+/* ════════════════════════════════════════════════════
+   VOICE STUDIO - 30 Characters
+════════════════════════════════════════════════════ */
+var VOICES=[
+  {id:'mad-scientist',name:'Mad Scientist',emoji:'🧪',lang:'en',desc:'Eccentric genius, dramatic pauses',rate:.85,pitch:1.4,vol:1,color:'#A78BFA'},
+  {id:'adam',name:'Adam',emoji:'👨',lang:'en',desc:'Deep, calm, authoritative',rate:.9,pitch:.7,vol:1,color:'#22D3EE'},
+  {id:'chinese-excited',name:'Li Wei - Excited',emoji:'🇨🇳',lang:'en',desc:'Super joyful, fast, enthusiastic!',rate:1.4,pitch:1.6,vol:1,color:'#FF2D55'},
+  {id:'news-anchor',name:'News Anchor',emoji:'📺',lang:'en',desc:'Professional broadcast voice',rate:.95,pitch:.9,vol:1,color:'#F59E0B'},
+  {id:'robot',name:'Robot X-9',emoji:'🤖',lang:'en',desc:'Mechanical, monotone AI voice',rate:.8,pitch:.5,vol:.9,color:'#10B981'},
+  {id:'old-wizard',name:'Old Wizard',emoji:'🧙',lang:'en',desc:'Ancient, mysterious, whispery',rate:.7,pitch:.65,vol:.85,color:'#8B5CF6'},
+  {id:'pirate',name:'Captain Blackbeard',emoji:'🏴‍☠️',lang:'en',desc:'Gruff pirate with attitude',rate:.9,pitch:.75,vol:1,color:'#F97316'},
+  {id:'narrator',name:'Epic Narrator',emoji:'🎬',lang:'en',desc:'Movie trailer deep voice',rate:.75,pitch:.55,vol:1,color:'#EF4444'},
+  {id:'teacher',name:'Professor',emoji:'👨‍🏫',lang:'en',desc:'Patient, clear explanation',rate:.85,pitch:.85,vol:.9,color:'#06B6D4'},
+  {id:'villain',name:'Dark Villain',emoji:'😈',lang:'en',desc:'Sinister, slow, menacing',rate:.7,pitch:.6,vol:.95,color:'#7C3AED'},
+  {id:'superhero',name:'Superhero',emoji:'🦸',lang:'en',desc:'Confident, heroic, strong',rate:.9,pitch:.8,vol:1,color:'#FFD60A'},
+  {id:'ghost',name:'Ghost',emoji:'👻',lang:'en',desc:'Hollow, ethereal, haunting',rate:.75,pitch:1.3,vol:.7,color:'#E2E8F0'},
+  {id:'kid',name:'Excited Kid',emoji:'🧒',lang:'en',desc:'High energy, fast, playful',rate:1.3,pitch:1.8,vol:1,color:'#FB923C'},
+  {id:'wise-elder',name:'Wise Elder',emoji:'👴',lang:'en',desc:'Slow, thoughtful, profound',rate:.65,pitch:.7,vol:.85,color:'#84CC16'},
+  {id:'sports',name:'Sports Commentator',emoji:'⚽',lang:'en',desc:'Fast, exciting, intense!',rate:1.4,pitch:1.1,vol:1,color:'#3B82F6'},
+  {id:'meditation',name:'Meditation Guide',emoji:'🧘',lang:'en',desc:'Ultra calm, peaceful, slow',rate:.6,pitch:.8,vol:.75,color:'#A78BFA'},
+  {id:'army',name:'Army Commander',emoji:'🪖',lang:'en',desc:'Sharp, commanding, direct',rate:.85,pitch:.65,vol:1,color:'#65A30D'},
+  {id:'witch',name:'Dark Witch',emoji:'🧙‍♀️',lang:'en',desc:'Cackling, mystical, eerie',rate:.8,pitch:1.2,vol:.9,color:'#D946EF'},
+  {id:'comedian',name:'Stand-up Comedian',emoji:'😂',lang:'en',desc:'Punchy timing, casual, witty',rate:1.1,pitch:1.0,vol:1,color:'#F59E0B'},
+  {id:'detective',name:'Noir Detective',emoji:'🕵️',lang:'en',desc:'Raspy, slow, mysterious',rate:.75,pitch:.65,vol:.85,color:'#64748B'},
+  {id:'anime-hero',name:'Anime Hero',emoji:'⚔️',lang:'en',desc:'Passionate, intense, determined!',rate:1.0,pitch:1.1,vol:1,color:'#FF6B35'},
+  {id:'alien',name:'Space Alien',emoji:'👽',lang:'en',desc:'Robotic mix, strange cadence',rate:.9,pitch:1.5,vol:.9,color:'#4ADE80'},
+  {id:'auctioneer',name:'Auctioneer',emoji:'🔨',lang:'en',desc:'Ultra fast, rapid fire!',rate:1.8,pitch:.9,vol:1,color:'#F43F5E'},
+  {id:'hypnotist',name:'Hypnotist',emoji:'🌀',lang:'en',desc:'Slow, repetitive, mesmerizing...',rate:.6,pitch:.75,vol:.8,color:'#818CF8'},
+  {id:'caveman',name:'Caveman',emoji:'🦴',lang:'en',desc:'Grunting, primitive, short words',rate:.75,pitch:.8,vol:1,color:'#92400E'},
+  {id:'queen',name:'Royal Queen',emoji:'👑',lang:'en',desc:'Regal, proper, commanding',rate:.8,pitch:1.05,vol:.9,color:'#FCD34D'},
+  {id:'surfer',name:'Surfer Dude',emoji:'🏄',lang:'en',desc:'Super chill, relaxed, casual',rate:.9,pitch:1.0,vol:.9,color:'#38BDF8'},
+  {id:'drill-sergeant',name:'Drill Sergeant',emoji:'💪',lang:'en',desc:'LOUD, aggressive, no-nonsense!',rate:1.0,pitch:.7,vol:1,color:'#4B5563'},
+  {id:'baby',name:'Baby Voice',emoji:'👶',lang:'en',desc:'Innocent, high pitched, cute',rate:.85,pitch:2.0,vol:.85,color:'#FBA4B5'},
+  {id:'storyteller',name:'Master Storyteller',emoji:'📖',lang:'en',desc:'Warm, engaging, expressive',rate:.85,pitch:.9,vol:.95,color:'#D97706'}
+];
+
+var _currentVoice=null;
+var _synth=window.speechSynthesis;
+
+function renderVoicesTab(){
+  $('pg-body').innerHTML=`
+  <div style="padding:24px;max-width:1100px;margin:0 auto">
+    <div style="background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(255,45,85,.06));border:1px solid rgba(167,139,250,.2);border-radius:16px;padding:20px;margin-bottom:24px">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">🎙️ Type text and click any voice to hear it!</div>
+      <textarea class="tarea" id="voice-text" style="min-height:70px;font-size:14px;margin-bottom:10px" placeholder="Yahan apna text likhein... Assalam o Alaikum! Welcome to my channel!"></textarea>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" style="padding:10px 20px" onclick="stopVoice()">⏹ Stop</button>
+        <span style="font-size:12px;color:var(--t3)">30 unique voices available • Click any card to play</span>
+        <div id="now-playing" style="margin-left:auto;font-size:12px;color:var(--green);font-weight:600;display:none">▶ Playing: <span id="np-name"></span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px" id="voices-grid"></div>
+  </div>`;
+  renderVoiceCards();
+}
+
+function renderVoiceCards(){
+  const grid=$('voices-grid');
+  if(!grid) return;
+  grid.innerHTML=VOICES.map(function(v,i){
+    return '<div class="voice-card" id="vc-'+v.id+'" onclick="playVoice(\''+v.id+'\')" style="text-align:center;padding:16px 12px">'
+      +'<div class="voice-avatar" style="background:'+v.color+'22;border:2px solid '+v.color+'44;margin:0 auto">'+v.emoji+'</div>'
+      +'<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">'+escH(v.name)+'</div>'
+      +'<div style="font-size:10px;color:var(--t3);line-height:1.4;margin-bottom:8px">'+escH(v.desc)+'</div>'
+      +'<div class="voice-eq" id="eq-'+v.id+'" style="justify-content:center;display:none">'
+      +'<span></span><span></span><span></span><span></span><span></span></div>'
+      +'<div id="play-btn-'+v.id+'" style="font-size:10px;color:'+v.color+';font-weight:600">▶ PLAY</div>'
+      +'</div>';
+  }).join('');
+}
+
+function playVoice(id){
+  stopVoice();
+  var v=VOICES.find(function(x){return x.id===id;});
+  if(!v) return;
+  var text=($('voice-text')&&$('voice-text').value)||'Hello! I am speaking to you right now. This is my unique voice!';
+  var utt=new SpeechSynthesisUtterance(text);
+  utt.rate=v.rate;
+  utt.pitch=v.pitch;
+  utt.volume=v.vol;
+  utt.lang=v.lang==='zh'?'zh-CN':'en-US';
+  // Try to get a specific browser voice
+  var voices=_synth.getVoices();
+  if(voices.length>0){
+    var match=null;
+    if(id==='robot'||id==='alien') match=voices.find(function(x){return x.name.toLowerCase().indexOf('robot')>=0||x.name.toLowerCase().indexOf('zira')>=0;});
+    if(!match && voices.length>0) match=voices[Math.floor(VOICES.indexOf(v)%(voices.length))];
+    if(match) utt.voice=match;
+  }
+  _currentVoice=utt;
+  _synth.speak(utt);
+  // UI
+  document.querySelectorAll('.voice-card').forEach(function(el){el.classList.remove('playing');});
+  var card=$('vc-'+id);
+  if(card) card.classList.add('playing');
+  var eq=$('eq-'+id);
+  if(eq) eq.style.display='flex';
+  var pb=$('play-btn-'+id);
+  if(pb) pb.textContent='▶ PLAYING';
+  var np=$('now-playing');
+  if(np){np.style.display='block';$('np-name').textContent=v.emoji+' '+v.name;}
+  utt.onend=function(){
+    if(card) card.classList.remove('playing');
+    if(eq) eq.style.display='none';
+    if(pb) pb.textContent='▶ PLAY';
+    var np2=$('now-playing');
+    if(np2) np2.style.display='none';
+  };
+}
+
+function stopVoice(){
+  _synth.cancel();
+  document.querySelectorAll('.voice-card').forEach(function(el){el.classList.remove('playing');});
+  document.querySelectorAll('.voice-eq').forEach(function(el){el.style.display='none';});
+}
+
+
+/* ════════════════════════════════════════════════════
+   AI VIDEO PLANNER
+════════════════════════════════════════════════════ */
+function renderVideoPlannerTab(){
+  $('pg-body').innerHTML=`
+  <div style="padding:24px;max-width:900px;margin:0 auto">
+    <div class="card" style="padding:22px;margin-bottom:20px">
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px">🎬 AI Video Production Planner</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Video Concept</label>
+          <input class="inp" id="vp-concept" placeholder="e.g. Noha about Karbala, DIY rocket tutorial..." style="font-size:13px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Video Style</label>
+          <select class="inp" id="vp-style" style="font-size:13px">
+            <option value="real">🎥 Real Life / Live Action</option>
+            <option value="cinematic">🎞️ Cinematic / Film Style</option>
+            <option value="cartoon">🎨 Cartoon / Animation</option>
+            <option value="3d">🖥️ 3D Animation / CGI</option>
+            <option value="documentary">📽️ Documentary Style</option>
+            <option value="music">🎵 Music Video / Nasheed</option>
+            <option value="vlog">📱 Vlog / Selfie Style</option>
+            <option value="shorts">⚡ YouTube Shorts</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Budget Level</label>
+          <select class="inp" id="vp-budget" style="font-size:13px">
+            <option value="zero">💸 Zero Budget (Phone only)</option>
+            <option value="low">💰 Low Budget (Basic gear)</option>
+            <option value="medium">💎 Medium Budget</option>
+            <option value="high">🏆 High Production</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Target Audience</label>
+          <input class="inp" id="vp-audience" placeholder="e.g. Pakistani youth, mothers, gamers..." style="font-size:13px">
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:14px" id="vp-btn" onclick="generateVideoplan()">
+        🎬 Generate Full Production Plan
+      </button>
+    </div>
+    <div id="vp-output" style="display:none"></div>
+  </div>`;
+}
+
+async function generateVideoplan(){
+  var concept=$('vp-concept').value.trim();
+  if(!concept){toast('Video concept likhein!','warn');return;}
+  var btn=$('vp-btn');
+  btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:16px;height:16px"></div> Planning your video...';
+  var style=$('vp-style').value;
+  var budget=$('vp-budget').value;
+  var audience=$('vp-audience').value||'general viewers';
+  var p=[
+    'You are a professional video director. Create a detailed video production plan.',
+    '',
+    'Video Concept: '+concept,
+    'Style: '+style,
+    'Budget: '+budget,
+    'Target Audience: '+audience,
+    '',
+    'Create a production plan with these sections:',
+    '1. VIDEO TITLE IDEAS (3 options)',
+    '2. SCENE BREAKDOWN (5-8 scenes with: Scene #, Description, Camera Angle, Lighting, Duration)',
+    '3. CAMERA ANGLES NEEDED (list all: wide shot, close up, etc)',
+    '4. EQUIPMENT LIST (based on budget)',
+    '5. LOCATION SUGGESTIONS',
+    '6. EDITING TIPS (cuts, music, effects)',
+    '7. THUMBNAIL CONCEPT',
+    '8. ESTIMATED PRODUCTION TIME',
+    '',
+    'For '+style+' style, be specific about camera movements, visual effects, and technical details.'
+  ].join('\n');
+  try{
+    const raw=await callClaude(p,2500);
+    // Parse and render nicely
+    var sections=raw.split(/\n(?=[0-9]\.|\n[A-Z])/);
+    $('vp-output').style.display='block';
+    $('vp-output').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'
+      +'<div style="font-size:15px;font-weight:700;color:var(--text)">📋 Production Plan</div>'
+      +'<button class="export-btn" style="padding:8px 16px;font-size:12px" onclick="downloadPlan()">⬇️ Download Plan</button>'
+      +'</div>'
+      +'<div class="card" style="padding:20px;white-space:pre-wrap;font-size:13px;color:var(--t2);line-height:1.8" id="vp-content">'+escH(raw)+'</div>';
+    window._lastPlan=raw;
+    $('vp-output').scrollIntoView({behavior:'smooth'});
+    toast('Production plan ready! 🎬','success');
+  }catch(e){toast('Error: '+e.message,'error');}
+  btn.disabled=false;btn.innerHTML='🎬 Generate Full Production Plan';
+}
+
+function downloadPlan(){
+  if(!window._lastPlan) return;
+  var blob=new Blob([window._lastPlan],{type:'text/plain'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='vidflow-production-plan.txt';
+  a.click();
+  toast('Plan downloaded!','success');
+}
+
+/* ════════════════════════════════════════════════════
+   BULK ANALYZER
+════════════════════════════════════════════════════ */
+var _bulkRunning=false;
+
+function renderBulkTab(){
+  var vids=S.videos||[];
+  $('pg-body').innerHTML=`
+  <div style="padding:24px;max-width:900px;margin:0 auto">
+    <div class="card" style="padding:20px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text)">⚡ Bulk Video Analyzer</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:4px">${vids.length} videos found — analyze all at once</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="exportBulkReport()">📄 Export PDF</button>
+          <button class="btn btn-primary" style="padding:11px 20px" id="bulk-start-btn" onclick="startBulkAnalysis()">
+            🚀 Analyze All ${vids.length} Videos
+          </button>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:12px 16px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px;color:var(--t3)">
+          <span>Overall Progress</span>
+          <span id="bulk-count">0/${vids.length}</span>
+        </div>
+        <div class="health-bar">
+          <div class="health-fill" id="bulk-progress" style="width:0%;background:linear-gradient(90deg,var(--violet),var(--cyan))"></div>
+        </div>
+      </div>
+    </div>
+    <div id="bulk-list">
+      ${vids.map(function(v,i){
+        var done=!!S.analysisCache[v.id];
+        var th=v.snippet&&(v.snippet.thumbnails&&(v.snippet.thumbnails.medium||v.snippet.thumbnails.default));
+        var thUrl=th&&th.url;
+        return '<div class="bulk-row '+(done?'done':'')+'" id="bulk-row-'+v.id+'">'
+          +(thUrl?'<img src="'+thUrl+'" style="width:48px;height:27px;border-radius:4px;object-fit:cover;flex-shrink:0">':'<div style="width:48px;height:27px;background:var(--surf2);border-radius:4px;flex-shrink:0"></div>')
+          +'<div style="flex:1;min-width:0">'
+          +'<div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escH(v.snippet&&v.snippet.title||'')+'</div>'
+          +'<div style="font-size:11px;color:var(--t3)">'+fmtNum(v.statistics&&v.statistics.viewCount||0)+' views</div>'
+          +'</div>'
+          +'<div id="bulk-status-'+v.id+'" style="font-size:11px;font-weight:600;color:'+(done?'var(--green)':'var(--t3)')+'">'+( done?'✅ Done':'⏳ Waiting')+'</div>'
+          +'</div>';
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+async function startBulkAnalysis(){
+  if(_bulkRunning){toast('Already running!','warn');return;}
+  _bulkRunning=true;
+  var btn=$('bulk-start-btn');
+  if(btn){btn.disabled=true;btn.innerHTML='⏳ Analyzing...';}
+  var vids=S.videos||[];
+  var done=0;
+  for(var i=0;i<vids.length;i++){
+    var v=vids[i];
+    if(S.analysisCache[v.id]){done++;continue;}
+    var row=$('bulk-row-'+v.id);
+    var status=$('bulk-status-'+v.id);
+    if(row) row.classList.add('analyzing');
+    if(status) status.textContent='🔄 Analyzing...';
+    try{
+      var r=await analyzeVideoAI(v);
+      S.analysisCache[v.id]=r;
+      if(row){row.classList.remove('analyzing');row.classList.add('done');}
+      if(status) status.textContent='✅ Score: '+r.viralScore;
+    }catch(e){
+      if(status) status.textContent='❌ Failed';
+    }
+    done++;
+    var pct=Math.round(done/vids.length*100);
+    var prog=$('bulk-progress');
+    var cnt=$('bulk-count');
+    if(prog) prog.style.width=pct+'%';
+    if(cnt) cnt.textContent=done+'/'+vids.length;
+    // Small delay between requests
+    await new Promise(function(res){setTimeout(res,500);});
+  }
+  _bulkRunning=false;
+  if(btn){btn.disabled=false;btn.innerHTML='✅ All Done! Re-Analyze';}
+  toast('Bulk analysis complete! '+vids.length+' videos analyzed ✅','success');
+}
+
+function exportBulkReport(){
+  var vids=S.videos||[];
+  var lines=['VidFlow Pro — Channel Analysis Report','Generated: '+new Date().toLocaleString(),'Channel: '+(S.channel&&S.channel.snippet&&S.channel.snippet.title||''),'','═'.repeat(60),''];
+  vids.forEach(function(v,i){
+    var a=S.analysisCache[v.id];
+    lines.push((i+1)+'. '+( v.snippet&&v.snippet.title||''));
+    lines.push('   Views: '+fmtNum(v.statistics&&v.statistics.viewCount||0)+' | Likes: '+fmtNum(v.statistics&&v.statistics.likeCount||0));
+    if(a){
+      lines.push('   Viral Score: '+a.viralScore+'/100');
+      lines.push('   Suggested Title: '+(a.suggestedTitle||''));
+      lines.push('   Tips: '+(a.optimizationTips||[]).join(' | '));
+    } else {
+      lines.push('   (Not analyzed yet)');
+    }
+    lines.push('');
+  });
+  var blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='vidflow-channel-report.txt';
+  a.click();
+  toast('Report exported!','success');
+}
+
+/* ════════════════════════════════════════════════════
+   SEO & HEALTH SCORE
+════════════════════════════════════════════════════ */
+function renderSeoTab(){
+  var vids=S.videos||[];
+  if(!vids.length){$('pg-body').innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No videos loaded</div></div>';return;}
+  // Calculate channel health
+  var scores=vids.map(function(v){return calcVideoHealth(v);});
+  var avg=Math.round(scores.reduce(function(a,b){return a+b.total;},0)/scores.length);
+  $('pg-body').innerHTML=`
+  <div style="padding:24px;max-width:1000px;margin:0 auto">
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;margin-bottom:20px">
+      <div class="card" style="padding:20px;text-align:center">
+        <div style="font-size:13px;color:var(--t3);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px">Channel Health Score</div>
+        <div style="font-size:64px;font-weight:800;font-family:'Syne',sans-serif;background:linear-gradient(135deg,${avg>=70?'var(--green),var(--cyan)':avg>=50?'var(--yellow),var(--orange)':'var(--red),var(--pink)'});-webkit-background-clip:text;-webkit-text-fill-color:transparent">${avg}</div>
+        <div style="font-size:16px;font-weight:700;color:${avg>=70?'var(--green)':avg>=50?'var(--yellow)':'var(--red)'}">${avg>=70?'🟢 Healthy':avg>=50?'🟡 Needs Work':'🔴 Critical'}</div>
+        <div class="health-bar" style="margin-top:16px">
+          <div class="health-fill" style="width:${avg}%;background:linear-gradient(90deg,${avg>=70?'var(--green)':avg>=50?'var(--yellow)':'var(--red)'},var(--cyan))"></div>
+        </div>
+        <div style="font-size:12px;color:var(--t3);margin-top:12px">Based on ${vids.length} videos</div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px">📊 Score Breakdown</div>
+        ${['Title Optimization','Description Quality','Tag Coverage','Thumbnail Quality','Engagement Rate'].map(function(label,i){
+          var pct=Math.round(scores.reduce(function(a,b){return a+b.breakdown[i];},0)/scores.length);
+          var color=pct>=70?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
+          return '<div style="margin-bottom:14px">'
+            +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">'
+            +'<span style="color:var(--t2)">'+label+'</span>'
+            +'<span style="color:'+color+';font-weight:700">'+pct+'/100</span>'
+            +'</div>'
+            +'<div class="health-bar"><div class="health-fill" style="width:'+pct+'%;background:linear-gradient(90deg,'+color+',var(--cyan))"></div></div>'
+            +'</div>';
+        }).join('')}
+      </div>
+    </div>
+    <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px">🎬 Per-Video Health Check</div>
+    <div style="display:grid;gap:8px">
+      ${vids.map(function(v,i){
+        var s=scores[i];
+        var color=s.total>=70?'var(--green)':s.total>=50?'var(--yellow)':'var(--red)';
+        var th=v.snippet&&v.snippet.thumbnails&&(v.snippet.thumbnails.medium||v.snippet.thumbnails.default);
+        return '<div class="card" style="padding:14px;display:flex;align-items:center;gap:14px">'
+          +(th?'<img src="'+th.url+'" style="width:64px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0">':'')
+          +'<div style="flex:1;min-width:0">'
+          +'<div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:6px">'+escH(v.snippet&&v.snippet.title||'')+'</div>'
+          +'<div class="health-bar"><div class="health-fill" style="width:'+s.total+'%;background:linear-gradient(90deg,'+color+',var(--cyan))"></div></div>'
+          +'</div>'
+          +'<div style="font-size:20px;font-weight:800;color:'+color+';font-family:Syne;flex-shrink:0;width:44px;text-align:right">'+s.total+'</div>'
+          +'<div style="flex-shrink:0">'
+          +s.checks.map(function(c){return '<span style="font-size:14px" title="'+escH(c.msg)+'">'+( c.pass?'✅':'❌')+'</span>';}).join('')
+          +'</div>'
+          +'</div>';
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function calcVideoHealth(video){
+  var sn=video.snippet||{},st=video.statistics||{};
+  var title=sn.title||'';
+  var desc=sn.description||'';
+  var tags=(sn.tags||[]);
+  var views=parseInt(st.viewCount)||0;
+  var likes=parseInt(st.likeCount)||0;
+  var hasHDThumb=!!(sn.thumbnails&&sn.thumbnails.maxres);
+  var checks=[
+    {pass:title.length>=20&&title.length<=70,msg:'Title length 20-70 chars (is '+title.length+')'},
+    {pass:/[?!|]/.test(title)||/\d/.test(title),msg:'Title has hook (number/question/emotion)'},
+    {pass:desc.length>200,msg:'Description over 200 chars'},
+    {pass:desc.toLowerCase().indexOf('subscribe')>=0||desc.toLowerCase().indexOf('like')>=0,msg:'Description has CTA'},
+    {pass:tags.length>=5,msg:'Has 5+ tags (has '+tags.length+')'},
+    {pass:tags.length>=10,msg:'Has 10+ tags for max reach'},
+    {pass:hasHDThumb,msg:'Has HD thumbnail (1280x720)'},
+    {pass:views>0&&likes>0&&(likes/views)>0.01,msg:'Good engagement rate (>1%)'},
+  ];
+  var breakdown=[
+    Math.round(((title.length>=20&&title.length<=70?50:25)+((/[?!|]/.test(title)||/\d/.test(title))?50:0))),
+    Math.round(((desc.length>200?50:desc.length>100?30:10)+(desc.toLowerCase().indexOf('subscribe')>=0?30:0)+(desc.length>500?20:0))),
+    Math.round(tags.length>=10?100:tags.length>=5?65:tags.length*10),
+    hasHDThumb?100:60,
+    Math.round(views>1000?90:views>100?70:views>10?50:20)
+  ];
+  var total=Math.round(checks.filter(function(c){return c.pass;}).length/checks.length*100);
+  return {total:total,checks:checks,breakdown:breakdown};
+}
+
+
+</script>
 <script src="https://accounts.google.com/gsi/client" async></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -169,6 +779,39 @@ select.inp{cursor:pointer}
 .add-account-btn:hover{border-color:rgba(124,58,237,.4);color:var(--text);background:rgba(124,58,237,.06)}
 
 .first-time-section{display:none!important}
+/* VOICE STUDIO */
+.voice-card{background:linear-gradient(145deg,rgba(10,10,30,.95),rgba(6,6,22,.9));border:1px solid rgba(167,139,250,.15);border-radius:16px;padding:16px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.voice-card:hover{border-color:rgba(167,139,250,.5);transform:translateY(-3px);box-shadow:0 15px 40px rgba(0,0,0,.5),0 0 0 1px rgba(167,139,250,.2)}
+.voice-card.playing{border-color:var(--green);box-shadow:0 0 0 2px rgba(52,211,153,.3),0 0 30px rgba(52,211,153,.15);animation:voice-pulse 1.5s infinite}
+@keyframes voice-pulse{0%,100%{box-shadow:0 0 0 2px rgba(52,211,153,.3),0 0 30px rgba(52,211,153,.15)}50%{box-shadow:0 0 0 4px rgba(52,211,153,.5),0 0 50px rgba(52,211,153,.3)}}
+.voice-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;margin-bottom:8px}
+.voice-eq{display:flex;align-items:flex-end;gap:2px;height:20px}
+.voice-eq span{width:3px;background:var(--green);border-radius:2px;animation:eq-bar .8s ease-in-out infinite}
+.voice-eq span:nth-child(2){animation-delay:.1s}
+.voice-eq span:nth-child(3){animation-delay:.2s}
+.voice-eq span:nth-child(4){animation-delay:.3s}
+.voice-eq span:nth-child(5){animation-delay:.15s}
+@keyframes eq-bar{0%,100%{height:4px}50%{height:18px}}
+/* SCRIPT WRITER */
+.script-section{background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.12);border-radius:12px;padding:14px;margin-bottom:12px}
+.script-label{font-size:10px;font-weight:700;color:var(--violet);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+/* SEO HEALTH */
+.health-bar{height:8px;background:rgba(255,255,255,.08);border-radius:50px;overflow:hidden;margin-top:6px}
+.health-fill{height:100%;border-radius:50px;transition:width 1s cubic-bezier(.16,1,.3,1)}
+.checklist-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:6px;font-size:13px;transition:all .2s}
+.checklist-item.pass{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);color:var(--text)}
+.checklist-item.fail{background:rgba(255,45,85,.06);border:1px solid rgba(255,45,85,.15);color:var(--t2)}
+.checklist-item.warn{background:rgba(252,211,77,.06);border:1px solid rgba(252,211,77,.15);color:var(--t2)}
+/* BULK */
+.bulk-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);margin-bottom:8px;transition:all .3s}
+.bulk-row.analyzing{border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.06)}
+.bulk-row.done{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.05)}
+/* VIDEO PLANNER */
+.scene-card{background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.15);border-radius:14px;padding:16px;margin-bottom:12px;position:relative}
+.scene-num{position:absolute;top:-10px;left:16px;background:linear-gradient(135deg,var(--red),var(--violet));color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:50px}
+/* EXPORT BTN */
+.export-btn{background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-weight:700;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;transition:all .3s}
+.export-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(16,185,129,.4)}
 .first-time-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t3);cursor:pointer;margin-bottom:14px;transition:color .2s}
 .first-time-toggle:hover{color:var(--t2)}
 .first-time-fields{animation:fadeUp .3s ease}
@@ -433,6 +1076,28 @@ input[type=color]{width:30px;height:30px;border:none;border-radius:6px;cursor:po
         Clone Prompts
       </div>
       <div class="sb-sec" style="margin-top:10px">Account</div>
+      <div class="sb-sec" style="margin-top:10px">🤖 AI TOOLS</div>
+      <div class="sb-item" onclick="switchTab('script')" id="tab-script">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        AI Script Writer
+      </div>
+      <div class="sb-item" onclick="switchTab('voices')" id="tab-voices">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Voice Studio
+      </div>
+      <div class="sb-item" onclick="switchTab('videoplanner')" id="tab-videoplanner">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        Video Planner
+      </div>
+      <div class="sb-sec" style="margin-top:10px">📊 ANALYTICS</div>
+      <div class="sb-item" onclick="switchTab('bulk')" id="tab-bulk">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Bulk Analyzer
+      </div>
+      <div class="sb-item" onclick="switchTab('seo')" id="tab-seo">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        SEO & Health
+      </div>
       <div class="sb-item" onclick="refreshVideos()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         Refresh Videos
@@ -936,12 +1601,17 @@ function switchTab(tab){
 }
 
 function renderCurrentTab(){
-  const titles={videos:'🎬 My Videos',outliers:'📊 Outlier Analysis',thumbnail:'🖼️ Thumbnail Studio',prompts:'🤖 Clone Prompt Generator'};
+  const titles={videos:'🎬 My Videos',outliers:'📊 Outlier Analysis',thumbnail:'🖼️ Thumbnail Studio',prompts:'🤖 Clone Prompts',script:'✍️ AI Script Writer',voices:'🎙️ Voice Studio',videoplanner:'🎬 AI Video Planner',bulk:'⚡ Bulk Analyzer',seo:'📊 SEO & Health Score'};
   $('pg-title').textContent=titles[S.currentTab]||'';
   if(S.currentTab==='videos') renderVideosTab();
   else if(S.currentTab==='outliers') renderOutliersTab();
   else if(S.currentTab==='thumbnail') renderThumbnailTab();
   else if(S.currentTab==='prompts') renderPromptsTab();
+  else if(S.currentTab==='script') renderScriptTab();
+  else if(S.currentTab==='voices') renderVoicesTab();
+  else if(S.currentTab==='videoplanner') renderVideoPlannerTab();
+  else if(S.currentTab==='bulk') renderBulkTab();
+  else if(S.currentTab==='seo') renderSeoTab();
 }
 
 /* ════════════════════════════════
