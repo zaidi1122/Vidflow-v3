@@ -1,4 +1,4 @@
-@@ -222,63 +222,81 @@ select.inp{cursor:pointer}
+@@ -222,63 +222,88 @@ select.inp{cursor:pointer}
 .ai-num{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .prog-bar{height:5px;background:var(--surf2);border-radius:50px;overflow:hidden;margin-top:5px}
 .prog-fill{height:100%;border-radius:50px;transition:width 1s ease}
@@ -41,6 +41,13 @@
 .vp-kpi{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:9px;text-align:center}
 .vp-kpi b{display:block;font-size:16px;font-family:'Syne',sans-serif}
 .vp-kpi span{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.pv-frame-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;margin-top:10px}
+.pv-frame{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surf2)}
+.pv-frame img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.pv-frame div{font-size:10px;color:var(--t3);padding:6px}
+.pv-player{border:1px solid var(--border);border-radius:12px;background:#000;overflow:hidden;position:relative;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+.pv-player img,.pv-player video{width:100%;height:100%;object-fit:cover}
+.pv-cap{position:absolute;left:10px;right:10px;bottom:10px;padding:6px 9px;border-radius:8px;background:rgba(0,0,0,.55);font-size:11px;color:#fff}
 
 /* EMPTY */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 24px;color:var(--t3);text-align:center}
@@ -80,7 +87,7 @@ input[type=color]{width:30px;height:30px;border:none;border-radius:6px;cursor:po
 .feature-btn{background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:12px;padding:12px 22px;font-weight:700;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:8px;transition:all .3s;font-family:'DM Sans',sans-serif}
 .feature-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(16,185,129,.4)}
 .ab-title{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(167,139,250,.1);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all .2s}
-@@ -1673,117 +1691,191 @@ function playVoice(id){
+@@ -1673,117 +1698,314 @@ function playVoice(id){
   if(eq)eq.style.display='flex';
   if(pb)pb.textContent='▶ PLAYING';
   var np=$('now-playing'),nn=$('np-name');
@@ -139,6 +146,18 @@ function renderVideoPlannerTab(){
   +'</div>'
   +'<button class="btn btn-primary" style="width:100%;padding:14px" id="vp-btn" onclick="generateVideoplan()">🎬 Generate Full Production Plan</button>'
   +'<button class="btn btn-primary" style="width:100%;padding:14px" id="vp-btn" onclick="generateVideoplan()">🎬 Build My Production Workspace</button>'
+  +'</div>'
+  +'<div id="vp-output" style="display:none;margin-bottom:18px"></div>'
+  +'<div class="card" style="padding:20px">'
+  +'<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px"><div style="font-size:14px;font-weight:700;color:var(--text)">🎥 Prompt → Video Generator (Beta)</div><span style="font-size:11px;color:var(--t3)">Creates a short video reel inside VidFlow</span></div>'
+  +'<textarea class="tarea" id="pv-prompt" style="min-height:88px;margin-bottom:10px" placeholder="Describe the video you want to create. Example: cinematic night drive in Karachi with neon reflections and emotional mood."></textarea>'
+  +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">'
+  +'<select class="inp" id="pv-style"><option value="cinematic">🎞️ Cinematic</option><option value="realistic">🎥 Realistic</option><option value="anime">🎨 Anime</option><option value="3d">🖥️ 3D</option></select>'
+  +'<select class="inp" id="pv-scenes"><option value="4">4 scenes (~8s)</option><option value="5">5 scenes (~10s)</option><option value="6">6 scenes (~12s)</option></select>'
+  +'<select class="inp" id="pv-ratio"><option value="16:9">16:9 YouTube</option><option value="9:16">9:16 Shorts</option></select>'
+  +'</div>'
+  +'<button class="btn btn-violet" style="width:100%" id="pv-btn" onclick="generatePromptVideo()">⚡ Generate Video from Prompt</button>'
+  +'<div id="pv-output" style="display:none;margin-top:12px"></div>'
   +'</div>'
   +'<div id="vp-output" style="display:none"></div>'
   +'</div>';
@@ -258,6 +277,118 @@ function downloadPlan(){
   a.download='vidflow-production-plan.txt';a.click();
   a.download='vidflow-production-workspace.txt';a.click();
   toast('Downloaded!','success');
+}
+
+function vpJson(raw){
+  if(!raw)return null;
+  try{return JSON.parse(raw);}catch(e){}
+  var m=raw.match(/\{[\s\S]*\}/);
+  if(m){try{return JSON.parse(m[0]);}catch(e2){}}
+  return null;
+}
+
+async function vpPlanScenes(prompt,style,count){
+  var ask='Return only JSON in this shape: {"title":"short","scenes":[{"prompt":"image prompt","caption":"short caption"}]} . Make exactly '+count+' scenes for a '+style+' video concept: '+prompt;
+  try{
+    var raw=await callClaude(ask,900);
+    var parsed=vpJson(raw);
+    if(parsed&&parsed.scenes&&parsed.scenes.length){
+      return {title:parsed.title||'Generated Video',scenes:parsed.scenes.slice(0,count)};
+    }
+  }catch(e){}
+  var scenes=[];
+  for(var i=0;i<count;i++)scenes.push({prompt:prompt+', '+style+' style, scene '+(i+1),caption:'Scene '+(i+1)});
+  return {title:'Generated Video',scenes:scenes};
+}
+
+function vpSizeFromRatio(ratio){
+  if(ratio==='9:16') return {w:720,h:1280};
+  return {w:1280,h:720};
+}
+
+function vpImg(url){
+  return new Promise(function(resolve,reject){
+    var i=new Image();
+    i.crossOrigin='anonymous';
+    i.onload=function(){resolve(i);};
+    i.onerror=reject;
+    i.src=url;
+  });
+}
+
+async function vpCanvasVideo(frames,ratio,onProgress){
+  var size=vpSizeFromRatio(ratio);
+  var c=document.createElement('canvas');c.width=size.w;c.height=size.h;
+  var ctx=c.getContext('2d');
+  var stream=c.captureStream(24);
+  var rec=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9'});
+  var chunks=[];
+  rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data);};
+  var stopped=new Promise(function(res){rec.onstop=res;});
+  rec.start();
+  for(var i=0;i<frames.length;i++){
+    if(onProgress)onProgress('Rendering scene '+(i+1)+'/'+frames.length+'...');
+    var img=await vpImg(frames[i].url);
+    var start=performance.now();
+    while(performance.now()-start<2000){
+      ctx.drawImage(img,0,0,size.w,size.h);
+      ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,size.h-90,size.w,90);
+      ctx.fillStyle='#fff';ctx.font='bold 34px DM Sans';ctx.fillText((frames[i].caption||'').slice(0,80),28,size.h-38);
+      await new Promise(function(r){requestAnimationFrame(r);});
+    }
+  }
+  rec.stop();
+  await stopped;
+  return new Blob(chunks,{type:'video/webm'});
+}
+
+async function generatePromptVideo(){
+  if(window._pvTimer){clearInterval(window._pvTimer);window._pvTimer=null;}
+  var prompt=(($('pv-prompt')&&$('pv-prompt').value)||'').trim();
+  if(!prompt){toast('Please write video prompt first','warn');return;}
+  var btn=$('pv-btn');if(!btn)return;
+  btn.disabled=true;btn.textContent='Generating...';
+  var style=(($('pv-style')&&$('pv-style').value)||'cinematic');
+  var count=parseInt((($('pv-scenes')&&$('pv-scenes').value)||'4'),10)||4;
+  var ratio=(($('pv-ratio')&&$('pv-ratio').value)||'16:9');
+  var out=$('pv-output');
+  if(out){out.style.display='block';out.innerHTML='<div class="card" style="padding:12px;font-size:12px;color:var(--t2)" id="pv-status">Planning scenes...</div>';}
+  try{
+    var plan=await vpPlanScenes(prompt,style,count);
+    var frames=(plan.scenes||[]).slice(0,count).map(function(s,ix){
+      var sp=(s.prompt||prompt)+' cinematic frame, '+style+' style, high detail';
+      var url='https://image.pollinations.ai/prompt/'+encodeURIComponent(sp)+'?width='+(ratio==='9:16'?720:1280)+'&height='+(ratio==='9:16'?1280:720)+'&seed='+(900+ix*17)+'&model=flux&nologo=true';
+      return {url:url,caption:(s.caption||('Scene '+(ix+1))).toString(),prompt:sp};
+    });
+    var idx=0;
+    out.innerHTML='<div class="vp-section" style="margin-bottom:10px"><h4>🎬 Live Preview</h4><div class="pv-player" id="pv-player"><img src="'+frames[0].url+'" alt="frame"><div class="pv-cap" id="pv-cap">'+escH(frames[0].caption)+'</div></div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-ghost btn-sm" onclick="downloadPromptVideo()">⬇️ Download Video</button><button class="btn btn-ghost btn-sm" onclick="generatePromptVideo()">🔄 Regenerate</button><span id="pv-status" style="font-size:11px;color:var(--t3);align-self:center">Generating video file...</span></div></div>'
+      +'<div class="vp-section"><h4>🖼️ Generated Frames</h4><div class="pv-frame-grid">'+frames.map(function(f,i){return '<div class="pv-frame"><img src="'+f.url+'" alt="frame '+(i+1)+'"><div>'+escH(f.caption)+'</div></div>';}).join('')+'</div></div>';
+    var cap=$('pv-cap');
+    var timer=setInterval(function(){idx=(idx+1)%frames.length;var im=qs('#pv-player img');if(im)im.src=frames[idx].url;if(cap)cap.textContent=frames[idx].caption;},1800);
+    window._pvTimer=timer;
+    var st=$('pv-status');
+    var blob=await vpCanvasVideo(frames,ratio,function(msg){if(st)st.textContent=msg;});
+    window._lastPromptVideoBlob=blob;
+    var url=URL.createObjectURL(blob);
+    window._lastPromptVideoUrl=url;
+    var player=$('pv-player');
+    if(player){player.innerHTML='<video controls autoplay loop src="'+url+'"></video>';}
+    if(st)st.textContent='Video ready!';
+    if(window._pvTimer){clearInterval(window._pvTimer);window._pvTimer=null;}
+    toast('Prompt video created inside webapp ✅','success');
+  }catch(e){
+    toast('Video generation failed: '+e.message,'error');
+    var st2=$('pv-status');if(st2)st2.textContent='Could not render file. Frames are still usable.';
+  }
+  btn.disabled=false;btn.textContent='⚡ Generate Video from Prompt';
+}
+
+function downloadPromptVideo(){
+  if(!window._lastPromptVideoBlob){toast('Generate video first','warn');return;}
+  var a=document.createElement('a');
+  a.href=window._lastPromptVideoUrl||URL.createObjectURL(window._lastPromptVideoBlob);
+  a.download='vidflow-prompt-video.webm';
+  a.click();
 }
 
 
