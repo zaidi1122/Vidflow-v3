@@ -244,6 +244,30 @@ select.inp{cursor:pointer}
 .pg-vid-row:hover,.pg-vid-row.sel{border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06)}
 .type-pill{padding:6px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid var(--border);background:var(--surf);color:var(--t3);white-space:nowrap}
 .type-pill.active{background:var(--violet);color:#fff;border-color:var(--violet)}
+.vp-workspace{display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start}
+.vp-section{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px}
+.vp-section h4{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-bottom:9px}
+.vp-list{display:grid;gap:8px}
+.vp-item{display:flex;gap:9px;align-items:flex-start;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:9px}
+.vp-item input[type='checkbox']{margin-top:2px;accent-color:var(--violet)}
+.vp-item small{display:block;color:var(--t3);font-size:10px;margin-top:2px}
+.scene-card{background:linear-gradient(145deg,rgba(10,10,30,.95),rgba(6,6,22,.9));border:1px solid var(--border);border-radius:11px;padding:11px}
+.scene-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:6px}
+.scene-num{font-size:11px;color:var(--violet);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.scene-meta{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.scene-desc{font-size:12px;color:var(--t2);line-height:1.55;margin-bottom:8px}
+.shot-line{font-size:11px;color:var(--text);padding:6px 8px;border-radius:7px;background:rgba(255,255,255,.03);margin-bottom:5px;border:1px solid rgba(167,139,250,.08)}
+.vp-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:8px}
+.vp-kpi{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:9px;text-align:center}
+.vp-kpi b{display:block;font-size:16px;font-family:'Syne',sans-serif}
+.vp-kpi span{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.pv-frame-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;margin-top:10px}
+.pv-frame{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surf2)}
+.pv-frame img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.pv-frame div{font-size:10px;color:var(--t3);padding:6px}
+.pv-player{border:1px solid var(--border);border-radius:12px;background:#000;overflow:hidden;position:relative;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+.pv-player img,.pv-player video{width:100%;height:100%;object-fit:cover}
+.pv-cap{position:absolute;left:10px;right:10px;bottom:10px;padding:6px 9px;border-radius:8px;background:rgba(0,0,0,.55);font-size:11px;color:#fff}
 
 /* EMPTY */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 24px;color:var(--t3);text-align:center}
@@ -257,6 +281,7 @@ select.inp{cursor:pointer}
 input[type=color]{width:30px;height:30px;border:none;border-radius:6px;cursor:pointer;padding:2px;background:var(--surf2)}
 
 @media(max-width:900px){.videos-layout{grid-template-columns:1fr}#studio-panel{display:none}.pg-layout{grid-template-columns:1fr}.pg-left{display:none}}
+@media(max-width:1040px){.vp-workspace{grid-template-columns:1fr}}
 @media(max-width:640px){#sidebar{display:none}.vid-grid{grid-template-columns:1fr 1fr}.thumb-layout{grid-template-columns:1fr}}
 
 /* ═══ NEW FEATURES CSS ═══ */
@@ -1695,12 +1720,13 @@ function stopVoice(){
    AI VIDEO PLANNER
 ══════════════════════════════════════════════════ */
 function renderVideoPlannerTab(){
-  $('pg-body').innerHTML='<div style="padding:24px;max-width:900px;margin:0 auto">'
-  +'<div class="card" style="padding:22px;margin-bottom:20px">'
-  +'<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:18px">🎬 AI Video Production Planner</div>'
+  $('pg-body').innerHTML='<div style="padding:24px;max-width:1000px;margin:0 auto">'
+  +'<div class="card" style="padding:22px;margin-bottom:18px">'
+  +'<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px">🎬 Pro Video Planner (Creator Mode)</div>'
+  +'<div style="font-size:12px;color:var(--t3);margin-bottom:16px">Generate a real production workflow with scene cards, shot list, tasks, and creator checklist — not just a text prompt.</div>'
   +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">'
   +'<div><label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Video Concept</label>'
-  +'<input class="inp" id="vp-concept" placeholder="e.g. Noha about Karbala..." style="font-size:13px"></div>'
+  +'<input class="inp" id="vp-concept" placeholder="e.g. Karbala emotional storytelling short film" style="font-size:13px"></div>'
   +'<div><label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Style</label>'
   +'<select class="inp" id="vp-style" style="font-size:13px">'
   +'<option value="real">🎥 Real Life / Live Action</option>'
@@ -1721,46 +1747,242 @@ function renderVideoPlannerTab(){
   +'<div><label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Target Audience</label>'
   +'<input class="inp" id="vp-audience" placeholder="e.g. Pakistani youth, mothers..." style="font-size:13px"></div>'
   +'</div>'
-  +'<button class="btn btn-primary" style="width:100%;padding:14px" id="vp-btn" onclick="generateVideoplan()">🎬 Generate Full Production Plan</button>'
+  +'<button class="btn btn-primary" style="width:100%;padding:14px" id="vp-btn" onclick="generateVideoplan()">🎬 Build My Production Workspace</button>'
   +'</div>'
-  +'<div id="vp-output" style="display:none"></div>'
+  +'<div id="vp-output" style="display:none;margin-bottom:18px"></div>'
+  +'<div class="card" style="padding:20px">'
+  +'<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px"><div style="font-size:14px;font-weight:700;color:var(--text)">🎥 Prompt → Video Generator (Beta)</div><span style="font-size:11px;color:var(--t3)">Creates a short video reel inside VidFlow</span></div>'
+  +'<textarea class="tarea" id="pv-prompt" style="min-height:88px;margin-bottom:10px" placeholder="Describe the video you want to create. Example: cinematic night drive in Karachi with neon reflections and emotional mood."></textarea>'
+  +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">'
+  +'<select class="inp" id="pv-style"><option value="cinematic">🎞️ Cinematic</option><option value="realistic">🎥 Realistic</option><option value="anime">🎨 Anime</option><option value="3d">🖥️ 3D</option></select>'
+  +'<select class="inp" id="pv-scenes"><option value="4">4 scenes (~8s)</option><option value="5">5 scenes (~10s)</option><option value="6">6 scenes (~12s)</option></select>'
+  +'<select class="inp" id="pv-ratio"><option value="16:9">16:9 YouTube</option><option value="9:16">9:16 Shorts</option></select>'
+  +'</div>'
+  +'<button class="btn btn-violet" style="width:100%" id="pv-btn" onclick="generatePromptVideo()">⚡ Generate Video from Prompt</button>'
+  +'<div id="pv-output" style="display:none;margin-top:12px"></div>'
+  +'</div>'
   +'</div>';
+}
+
+function vpExtractSection(raw,name){
+  var lines=(raw||'').split('\n');
+  var out=[],active=false;
+  for(var i=0;i<lines.length;i++){
+    var l=lines[i].trim();
+    if(!active&&l.toLowerCase().indexOf(name)>=0){active=true;continue;}
+    if(active&&/^\d+[.)\-:]/.test(l)&&l.toLowerCase().indexOf(name)<0)break;
+    if(active&&l)out.push(lines[i]);
+  }
+  return out.join('\n').trim();
+}
+
+function vpBuildSceneCards(text){
+  var lines=(text||'').split('\n').map(function(l){return l.trim();}).filter(Boolean);
+  var scenes=[],curr=null;
+  lines.forEach(function(l){
+    if(/^(scene\s*\d+|\d+[.)]\s*scene|\d+[.)]\s*)/i.test(l)){
+      if(curr)scenes.push(curr);
+      curr={title:l,desc:'',shots:[]};
+      return;
+    }
+    if(!curr){curr={title:'Scene 1',desc:'',shots:[]};}
+    if(/(camera|angle|shot|lighting|duration)/i.test(l))curr.shots.push(l);
+    else curr.desc+=(curr.desc?' ':'')+l;
+  });
+  if(curr)scenes.push(curr);
+  scenes=scenes.slice(0,10);
+  return scenes.map(function(s,idx){
+    return '<div class="scene-card">'
+      +'<div class="scene-top"><div class="scene-num">Scene '+(idx+1)+'</div><div class="scene-meta">'+escH((s.shots[0]||'Ready to shoot').slice(0,48))+'</div></div>'
+      +'<div class="scene-desc">'+escH(s.desc||s.title)+'</div>'
+      +(s.shots.slice(0,3).map(function(sh){return '<div class="shot-line">🎥 '+escH(sh)+'</div>';}).join('')||'<div class="shot-line">🎥 Add your best camera angle here</div>')
+      +'</div>';
+  }).join('');
+}
+
+function vpChecklistItems(plan){
+  var equip=vpExtractSection(plan,'equipment')||'Phone / Camera, Mic, Lights';
+  var loc=vpExtractSection(plan,'location')||'Location scout and permits';
+  var edit=vpExtractSection(plan,'editing')||'Cuts, pacing, music sync';
+  return [
+    {t:'Finalize Script + Storyboard',s:'Lock script and map each shot before shoot day.'},
+    {t:'Gear Ready',s:equip.split('\n').slice(0,1)[0]||equip},
+    {t:'Location & Schedule',s:loc.split('\n').slice(0,1)[0]||loc},
+    {t:'Shoot Day Execution',s:'Capture A-roll, B-roll, and safety takes for each scene.'},
+    {t:'Post-Production',s:edit.split('\n').slice(0,1)[0]||edit},
+    {t:'Publish + Analyze',s:'Upload with strong title/thumbnail then monitor retention.'}
+  ];
 }
 
 async function generateVideoplan(){
   var concept=($('vp-concept')&&$('vp-concept').value)||'';concept=concept.trim();
   if(!concept){toast('Video concept likhein!','warn');return;}
   var btn=$('vp-btn');if(!btn)return;
-  btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:16px;height:16px;border-width:2px"></div> Planning...';
+  btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:16px;height:16px;border-width:2px"></div> Building workspace...';
   var style=($('vp-style')&&$('vp-style').value)||'real';
   var budget=($('vp-budget')&&$('vp-budget').value)||'low';
   var audience=($('vp-audience')&&$('vp-audience').value)||'general viewers';
-  var p='You are a professional video director. Create a detailed production plan.\nConcept: '+concept+'\nStyle: '+style+'\nBudget: '+budget+'\nAudience: '+audience+'\n\nCreate plan with:\n1. TITLE IDEAS (3 options)\n2. SCENE BREAKDOWN (5-8 scenes: scene#, description, camera angle, lighting, duration)\n3. CAMERA ANGLES NEEDED\n4. EQUIPMENT LIST (based on budget)\n5. LOCATION SUGGESTIONS\n6. EDITING TIPS (cuts, music, effects)\n7. THUMBNAIL CONCEPT\n8. PRODUCTION TIMELINE\n\nBe specific for '+style+' style.';
+  var p='You are a professional video director and production manager. Return a practical production plan for creators.\nConcept: '+concept+'\nStyle: '+style+'\nBudget: '+budget+'\nAudience: '+audience+'\n\nCreate sections exactly in this order:\n1. TITLE IDEAS (3)\n2. SCENE BREAKDOWN (6 scenes with shot details, camera, lighting, duration)\n3. CAMERA ANGLES NEEDED\n4. EQUIPMENT LIST\n5. LOCATION SUGGESTIONS\n6. EDITING TIPS\n7. THUMBNAIL CONCEPT\n8. PRODUCTION TIMELINE\n\nKeep it execution-focused and specific.';
   try{
     var raw=await callClaude(p,2500);
     var out=$('vp-output');
+    var scenes=vpBuildSceneCards(vpExtractSection(raw,'scene breakdown')||raw);
+    var list=vpChecklistItems(raw);
+    var checklist=list.map(function(i,ix){
+      return '<label class="vp-item"><input type="checkbox" id="vp-task-'+ix+'"><div><div style="font-size:12px;color:var(--text);font-weight:600">'+escH(i.t)+'</div><small>'+escH(i.s)+'</small></div></label>';
+    }).join('');
+    var timeline=vpExtractSection(raw,'production timeline')||'Pre-production → Shoot → Edit → Publish';
     if(out){
       out.style.display='block';
-      out.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
-        +'<div style="font-size:15px;font-weight:700;color:var(--text)">📋 Production Plan</div>'
-        +'<button class="feature-btn" style="padding:8px 16px;font-size:12px" onclick="downloadPlan()">⬇️ Download</button>'
+      out.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+        +'<div style="font-size:15px;font-weight:700;color:var(--text)">📋 Production Workspace</div>'
+        +'<div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="copyPlan()">📋 Copy</button><button class="feature-btn" style="padding:8px 16px;font-size:12px" onclick="downloadPlan()">⬇️ Download</button></div>'
         +'</div>'
-        +'<div class="card" style="padding:20px;white-space:pre-wrap;font-size:13px;color:var(--t2);line-height:1.85" id="vp-content">'+escH(raw)+'</div>';
+        +'<div class="vp-workspace">'
+        +'<div>'
+        +'<div class="vp-kpis"><div class="vp-kpi"><b>'+(scenes?Math.min((scenes.match(/scene-card/g)||[]).length,10):6)+'</b><span>Scenes</span></div><div class="vp-kpi"><b>'+style.toUpperCase()+'</b><span>Style</span></div><div class="vp-kpi"><b>'+budget.toUpperCase()+'</b><span>Budget</span></div></div>'
+        +'<div class="vp-section" style="margin-bottom:10px"><h4>🎞️ Scene Board</h4><div style="display:grid;gap:8px">'+scenes+'</div></div>'
+        +'<div class="vp-section"><h4>🗓️ Timeline</h4><div class="prompt-box" style="max-height:160px">'+escH(timeline)+'</div></div>'
+        +'</div>'
+        +'<div>'
+        +'<div class="vp-section" style="margin-bottom:10px"><h4>✅ Creator Checklist</h4><div class="vp-list">'+checklist+'</div></div>'
+        +'<div class="vp-section"><h4>🧠 Full Plan Notes</h4><div class="prompt-box" style="max-height:320px" id="vp-content">'+escH(raw)+'</div></div>'
+        +'</div>'
+        +'</div>';
       window._lastPlan=raw;
       out.scrollIntoView({behavior:'smooth'});
     }
-    toast('Production plan ready! 🎬','success');
+    toast('Production workspace ready! 🎬','success');
   }catch(e){toast('Error: '+e.message,'error');}
-  btn.disabled=false;btn.innerHTML='🎬 Generate Full Production Plan';
+  btn.disabled=false;btn.innerHTML='🎬 Build My Production Workspace';
+}
+
+function copyPlan(){
+  if(!window._lastPlan)return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(window._lastPlan);toast('Plan copied!','success');return;}
+  toast('Clipboard not available','warn');
 }
 
 function downloadPlan(){
   if(!window._lastPlan)return;
   var a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([window._lastPlan],{type:'text/plain'}));
-  a.download='vidflow-production-plan.txt';a.click();
+  a.download='vidflow-production-workspace.txt';a.click();
   toast('Downloaded!','success');
 }
+
+function vpJson(raw){
+  if(!raw)return null;
+  try{return JSON.parse(raw);}catch(e){}
+  var m=raw.match(/\{[\s\S]*\}/);
+  if(m){try{return JSON.parse(m[0]);}catch(e2){}}
+  return null;
+}
+
+async function vpPlanScenes(prompt,style,count){
+  var ask='Return only JSON in this shape: {"title":"short","scenes":[{"prompt":"image prompt","caption":"short caption"}]} . Make exactly '+count+' scenes for a '+style+' video concept: '+prompt;
+  try{
+    var raw=await callClaude(ask,900);
+    var parsed=vpJson(raw);
+    if(parsed&&parsed.scenes&&parsed.scenes.length){
+      return {title:parsed.title||'Generated Video',scenes:parsed.scenes.slice(0,count)};
+    }
+  }catch(e){}
+  var scenes=[];
+  for(var i=0;i<count;i++)scenes.push({prompt:prompt+', '+style+' style, scene '+(i+1),caption:'Scene '+(i+1)});
+  return {title:'Generated Video',scenes:scenes};
+}
+
+function vpSizeFromRatio(ratio){
+  if(ratio==='9:16') return {w:720,h:1280};
+  return {w:1280,h:720};
+}
+
+function vpImg(url){
+  return new Promise(function(resolve,reject){
+    var i=new Image();
+    i.crossOrigin='anonymous';
+    i.onload=function(){resolve(i);};
+    i.onerror=reject;
+    i.src=url;
+  });
+}
+
+async function vpCanvasVideo(frames,ratio,onProgress){
+  var size=vpSizeFromRatio(ratio);
+  var c=document.createElement('canvas');c.width=size.w;c.height=size.h;
+  var ctx=c.getContext('2d');
+  var stream=c.captureStream(24);
+  var rec=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9'});
+  var chunks=[];
+  rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data);};
+  var stopped=new Promise(function(res){rec.onstop=res;});
+  rec.start();
+  for(var i=0;i<frames.length;i++){
+    if(onProgress)onProgress('Rendering scene '+(i+1)+'/'+frames.length+'...');
+    var img=await vpImg(frames[i].url);
+    var start=performance.now();
+    while(performance.now()-start<2000){
+      ctx.drawImage(img,0,0,size.w,size.h);
+      ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,size.h-90,size.w,90);
+      ctx.fillStyle='#fff';ctx.font='bold 34px DM Sans';ctx.fillText((frames[i].caption||'').slice(0,80),28,size.h-38);
+      await new Promise(function(r){requestAnimationFrame(r);});
+    }
+  }
+  rec.stop();
+  await stopped;
+  return new Blob(chunks,{type:'video/webm'});
+}
+
+async function generatePromptVideo(){
+  if(window._pvTimer){clearInterval(window._pvTimer);window._pvTimer=null;}
+  var prompt=(($('pv-prompt')&&$('pv-prompt').value)||'').trim();
+  if(!prompt){toast('Please write video prompt first','warn');return;}
+  var btn=$('pv-btn');if(!btn)return;
+  btn.disabled=true;btn.textContent='Generating...';
+  var style=(($('pv-style')&&$('pv-style').value)||'cinematic');
+  var count=parseInt((($('pv-scenes')&&$('pv-scenes').value)||'4'),10)||4;
+  var ratio=(($('pv-ratio')&&$('pv-ratio').value)||'16:9');
+  var out=$('pv-output');
+  if(out){out.style.display='block';out.innerHTML='<div class="card" style="padding:12px;font-size:12px;color:var(--t2)" id="pv-status">Planning scenes...</div>';}
+  try{
+    var plan=await vpPlanScenes(prompt,style,count);
+    var frames=(plan.scenes||[]).slice(0,count).map(function(s,ix){
+      var sp=(s.prompt||prompt)+' cinematic frame, '+style+' style, high detail';
+      var url='https://image.pollinations.ai/prompt/'+encodeURIComponent(sp)+'?width='+(ratio==='9:16'?720:1280)+'&height='+(ratio==='9:16'?1280:720)+'&seed='+(900+ix*17)+'&model=flux&nologo=true';
+      return {url:url,caption:(s.caption||('Scene '+(ix+1))).toString(),prompt:sp};
+    });
+    var idx=0;
+    out.innerHTML='<div class="vp-section" style="margin-bottom:10px"><h4>🎬 Live Preview</h4><div class="pv-player" id="pv-player"><img src="'+frames[0].url+'" alt="frame"><div class="pv-cap" id="pv-cap">'+escH(frames[0].caption)+'</div></div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-ghost btn-sm" onclick="downloadPromptVideo()">⬇️ Download Video</button><button class="btn btn-ghost btn-sm" onclick="generatePromptVideo()">🔄 Regenerate</button><span id="pv-status" style="font-size:11px;color:var(--t3);align-self:center">Generating video file...</span></div></div>'
+      +'<div class="vp-section"><h4>🖼️ Generated Frames</h4><div class="pv-frame-grid">'+frames.map(function(f,i){return '<div class="pv-frame"><img src="'+f.url+'" alt="frame '+(i+1)+'"><div>'+escH(f.caption)+'</div></div>';}).join('')+'</div></div>';
+    var cap=$('pv-cap');
+    var timer=setInterval(function(){idx=(idx+1)%frames.length;var im=qs('#pv-player img');if(im)im.src=frames[idx].url;if(cap)cap.textContent=frames[idx].caption;},1800);
+    window._pvTimer=timer;
+    var st=$('pv-status');
+    var blob=await vpCanvasVideo(frames,ratio,function(msg){if(st)st.textContent=msg;});
+    window._lastPromptVideoBlob=blob;
+    var url=URL.createObjectURL(blob);
+    window._lastPromptVideoUrl=url;
+    var player=$('pv-player');
+    if(player){player.innerHTML='<video controls autoplay loop src="'+url+'"></video>';}
+    if(st)st.textContent='Video ready!';
+    if(window._pvTimer){clearInterval(window._pvTimer);window._pvTimer=null;}
+    toast('Prompt video created inside webapp ✅','success');
+  }catch(e){
+    toast('Video generation failed: '+e.message,'error');
+    var st2=$('pv-status');if(st2)st2.textContent='Could not render file. Frames are still usable.';
+  }
+  btn.disabled=false;btn.textContent='⚡ Generate Video from Prompt';
+}
+
+function downloadPromptVideo(){
+  if(!window._lastPromptVideoBlob){toast('Generate video first','warn');return;}
+  var a=document.createElement('a');
+  a.href=window._lastPromptVideoUrl||URL.createObjectURL(window._lastPromptVideoBlob);
+  a.download='vidflow-prompt-video.webm';
+  a.click();
+}
+
 
 /* ══════════════════════════════════════════════════
    BULK ANALYZER
